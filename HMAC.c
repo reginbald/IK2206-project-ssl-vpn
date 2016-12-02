@@ -1,6 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <openssl/hmac.h>
+
+unsigned char* generate_hmac(unsigned char *key, unsigned char *data) {
+    unsigned char* hmac;
+    hmac = HMAC(EVP_sha256(), key, strlen((const char *)key), data, strlen((const char *)data), NULL, NULL);
+    return hmac;
+}
 
 int main() {
     // Secret key
@@ -11,7 +18,7 @@ int main() {
 
     unsigned char* hmac;
 
-    hmac = HMAC(EVP_sha256(), key, strlen(key), (unsigned char*)data, strlen(data), NULL, NULL);
+    hmac = generate_hmac((unsigned char *)key, (unsigned char *)data);
 
     char mdString[32];
     for(int i = 0; i < 32; i++)
@@ -21,3 +28,4 @@ int main() {
  
     return 0;
 }
+
