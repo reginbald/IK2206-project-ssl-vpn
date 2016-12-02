@@ -3,6 +3,6 @@
 
 unsigned char* generate_hmac(unsigned char *key, unsigned char *data);
 
-bool compare_hmac(unsigned char *key, unsigned char *data, unsigned char *hmac);
+int compare_hmac(unsigned char *key, unsigned char *data, unsigned char *hmac);
 
 #endif
