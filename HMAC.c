@@ -13,7 +13,7 @@ int compare_hmac(unsigned char *key, unsigned char *data, unsigned char *hmac) {
     new_hmac = generate_hmac(key, data);
 
     for(int i = 0; i < 32; i++) {
-        if ((unsigned int)hmac[i] != (unsigned int)new_hmac[i]){
+        if (hmac[i] != new_hmac[i]){
             return 0;
         }
     }
