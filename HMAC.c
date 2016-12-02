@@ -21,51 +21,51 @@ int compare_hmac(unsigned char *key, unsigned char *data, unsigned char *hmac) {
     return 1;
 }
 
-int main() {
-    // Secret key
-    char key[] = "012345678";
+// int main() {
+//     // Secret key
+//     char key[] = "012345678";
     
-    // Encrypted data to be hashed using HMAC
-    char data[] = "hello world";
+//     // Encrypted data to be hashed using HMAC
+//     char data[] = "hello world";
 
-    unsigned char *hmac = (unsigned char*)malloc(sizeof(char) * 32);
-    unsigned char *old_hmac = (unsigned char*)malloc(sizeof(char) * 32);
+//     unsigned char *hmac = (unsigned char*)malloc(sizeof(char) * 32);
+//     unsigned char *old_hmac = (unsigned char*)malloc(sizeof(char) * 32);
 
-    hmac = generate_hmac((unsigned char *)key, (unsigned char *)data);
+//     hmac = generate_hmac((unsigned char *)key, (unsigned char *)data);
 
-    //char mdString[32];
-    //for(int i = 0; i < 32; i++)
-    //     sprintf(&mdString[i*2], "%02x", (unsigned int)hmac[i]);
-    //printf("HMAC: %s\n", mdString);
+//     //char mdString[32];
+//     //for(int i = 0; i < 32; i++)
+//     //     sprintf(&mdString[i*2], "%02x", (unsigned int)hmac[i]);
+//     //printf("HMAC: %s\n", mdString);
 
-    // Compare HMAC
-    memcpy(old_hmac, hmac, 32);
-    char fkey[] = "000000000";
-    char fdata[] = "world hello";
+//     // Compare HMAC
+//     memcpy(old_hmac, hmac, 32);
+//     char fkey[] = "000000000";
+//     char fdata[] = "world hello";
 
-    if(compare_hmac((unsigned char *)key, (unsigned char *)data, old_hmac)){
-        printf("CORRECT \n");
-    } else {
-        printf("WRONG\n");
-    }
+//     if(compare_hmac((unsigned char *)key, (unsigned char *)data, old_hmac)){
+//         printf("CORRECT \n");
+//     } else {
+//         printf("WRONG\n");
+//     }
 
-    if(compare_hmac((unsigned char *)fkey, (unsigned char *)data, old_hmac)){
-        printf("WRONG\n");
-    } else {
-        printf("CORRECT\n");
-    }
+//     if(compare_hmac((unsigned char *)fkey, (unsigned char *)data, old_hmac)){
+//         printf("WRONG\n");
+//     } else {
+//         printf("CORRECT\n");
+//     }
 
-    if(compare_hmac((unsigned char *)key, (unsigned char *)fdata, old_hmac)){
-        printf("WRONG\n");
-    } else {
-        printf("CORRECT\n");
-    }
+//     if(compare_hmac((unsigned char *)key, (unsigned char *)fdata, old_hmac)){
+//         printf("WRONG\n");
+//     } else {
+//         printf("CORRECT\n");
+//     }
 
-    if(compare_hmac((unsigned char *)fkey, (unsigned char *)fdata, old_hmac)){
-        printf("WRONG\n");
-    } else {
-        printf("CORRECT\n");
-    }
-    return 0;
-}
+//     if(compare_hmac((unsigned char *)fkey, (unsigned char *)fdata, old_hmac)){
+//         printf("WRONG\n");
+//     } else {
+//         printf("CORRECT\n");
+//     }
+//     return 0;
+// }
 
