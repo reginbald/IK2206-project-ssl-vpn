@@ -37,6 +37,10 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <stdarg.h>
+#include "AES.h"
+#include <openssl/conf.h>
+#include <openssl/evp.h>
+#include <openssl/err.h>
 
 /* buffer for reading from tun/tap interface, must be >= 1500 */
 #define BUFSIZE 2000   
@@ -186,7 +190,8 @@ int main(int argc, char *argv[]) {
   int maxfd;
   uint16_t nread, nwrite, plength;
 //  uint16_t total_len, ethertype;
-  char buffer[BUFSIZE];
+  char buffer[BUFSIZE], temp[BUFSIZE];
+
   struct sockaddr_in local, remote;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
@@ -320,6 +325,17 @@ int main(int argc, char *argv[]) {
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
 
+  //Init of encryption
+  unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+
+  /* A 128 bit IV */
+  unsigned char *iv = (unsigned char *)"01234567890123456";
+
+  ERR_load_crypto_strings();
+  OpenSSL_add_all_algorithms();
+  OPENSSL_config(NULL);
+
+
   while(1) {
     int ret;
     fd_set rd_set;
@@ -347,7 +363,8 @@ int main(int argc, char *argv[]) {
       do_debug("TAP2NET %lu: Read %d bytes from the tap interface\n", tap2net, nread);
 
       /* write packet */
-      nwrite = sendto(net_fd, buffer, nread, 0, (struct sockaddr*) &remote, remotelen); 
+      nread = encrypt (buffer, nread, key, iv, temp);
+      nwrite = sendto(net_fd, temp, nread, 0, (struct sockaddr*) &remote, remotelen); 
       if (nwrite < 0) {
         perror("Sending data");
         exit(1);
@@ -371,8 +388,9 @@ int main(int argc, char *argv[]) {
 
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
 
+      nread = decrypt(buffer, nread, key, iv, temp);
       /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
-      nwrite = cwrite(tap_fd, buffer, nread);
+      nwrite = cwrite(tap_fd, temp, nread);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
   }
