@@ -2,7 +2,7 @@
 
 echo -n "Type eth# and hit [Enter] > "
 read eth
-echo -n "Type external IP address and hit [Enter] > "
+echo -n "Type server IP address and hit [Enter] > "
 read ip
 # Run this on the gateway
 sudo ifconfig $eth 10.0.20.1
