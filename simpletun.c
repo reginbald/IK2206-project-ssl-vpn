@@ -371,8 +371,8 @@ int main(int argc, char *argv[]) {
 
   /* Setup the connection */
   char hostname[22];
-  strcpy(hostname, remote_ip); /* copy name into the new var */
-  strcat(hostname, ":55555");
+  strcpy(hostname, remote_ip); /* copy ip into the new var */
+  strcat(hostname, ":55555"); /* adding port to new var */
 
   printf("HOSTNAME: %s\n", hostname);
 
