@@ -332,10 +332,69 @@ int main(int argc, char *argv[]) {
   /* A 128 bit IV */
   unsigned char *iv = (unsigned char *)"01234567890123456";
 
+  /* Set up the library */
   ERR_load_crypto_strings();
   OpenSSL_add_all_algorithms();
   OPENSSL_config(NULL);
 
+  ERR_load_BIO_strings();
+  SSL_load_error_strings();
+
+  /* SSL context setup */
+  ctx = SSL_CTX_new(SSLv23_client_method());
+
+  /* Load certificate */
+  if(cliserv==CLIENT){
+    if(! SSL_CTX_load_verify_locations(ctx, "client.crt", NULL))
+    {
+      fprintf(stderr, "Error loading certificate \n");
+      ERR_print_errors_fp(stderr);
+      SSL_CTX_free(ctx);
+      return 0;
+    }
+  } else {
+    if(! SSL_CTX_load_verify_locations(ctx, "server.crt", NULL))
+    {
+      fprintf(stderr, "Error loading trust store\n");
+      ERR_print_errors_fp(stderr);
+      SSL_CTX_free(ctx);
+      return 0;
+    }
+  }
+
+  /* Setup the connection */
+  bio = BIO_new_ssl_connect(ctx);
+
+  /* Using SSL_MODE_AUTO_RETRY flag */
+  BIO_get_ssl(bio, & ssl);
+  SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
+
+  /* Setup the connection */
+  char hostname[22];
+  strcpy(hostname, remote_ip); /* copy name into the new var */
+  strcat(hostname, ":55555");
+
+  printf("HOSTNAME: %s\n", hostname);
+
+  BIO_set_conn_hostname(bio, hostname);
+
+  if(BIO_do_connect(bio) <= 0)
+  {
+    fprintf(stderr, "Error attempting to connect\n");
+    ERR_print_errors_fp(stderr);
+    BIO_free_all(bio);
+    SSL_CTX_free(ctx);
+    return 0;
+  }
+  /* Check the certificate */
+
+    if(SSL_get_verify_result(ssl) != X509_V_OK)
+    {
+        fprintf(stderr, "Certificate verification error: %i\n", SSL_get_verify_result(ssl));
+        BIO_free_all(bio);
+        SSL_CTX_free(ctx);
+        return 0;
+    }
 
   while(1) {
     int ret;
@@ -401,6 +460,10 @@ int main(int argc, char *argv[]) {
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
   }
+
+  /* Close the connection and free the context */
+  BIO_free_all(bio);
+  SSL_CTX_free(ctx);
   
   return(0);
 }
