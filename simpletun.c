@@ -340,6 +340,10 @@ int main(int argc, char *argv[]) {
   ERR_load_BIO_strings();
   SSL_load_error_strings();
 
+  BIO * bio;
+  SSL * ssl;
+  SSL_CTX * ctx;
+
   /* SSL context setup */
   ctx = SSL_CTX_new(SSLv23_client_method());
 
