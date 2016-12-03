@@ -8,5 +8,5 @@ read ip
 sudo ifconfig $eth 10.0.20.1
 sudo sysctl -w net.ipv4.ip_forward=1
 sudo sysctl -p
-sudo ./simpletun-udp -i tun0 -c $ip -d
+sudo ./../simpletun -i tun0 -c $ip -d
 
