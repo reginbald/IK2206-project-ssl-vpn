@@ -1,6 +1,6 @@
 # Generated automatically from Makefile.in by configure.
 CC=gcc
-CFLAGS=-g -I/usr/local/ssl/include  -std=c99 -Wall 
+CFLAGS=-g -I/usr/local/ssl/include   
 LD=-L/usr/local/ssl/lib  -lssl -lcrypto -ldl
 
 
@@ -16,7 +16,7 @@ AES.o: AES.c
 	$(CC) $(CFLAGS) -c AES.c $(LD)
 
 HMAC.o: HMAC.c
-	$(CC) $(CFLAGS) -c HMAC.c $(LD)
+	$(CC) $(CFLAGS) -std=c99 -c HMAC.c $(LD)
 
 clean:	
 	rm *.o
