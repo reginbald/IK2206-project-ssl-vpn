@@ -38,6 +38,7 @@
 #include <errno.h>
 #include <stdarg.h>
 #include "AES.h"
+#include "HMAC.h"
 #include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
@@ -364,7 +365,9 @@ int main(int argc, char *argv[]) {
 
       /* write packet */
       nread = encrypt (buffer, nread, key, iv, temp);
-      nwrite = sendto(net_fd, temp, nread, 0, (struct sockaddr*) &remote, remotelen); 
+      unsigned char* t = generate_hmac(key, temp);
+      memcpy(temp+nread, t, 32);
+      nwrite = sendto(net_fd, temp, nread+32, 0, (struct sockaddr*) &remote, remotelen); 
       if (nwrite < 0) {
         perror("Sending data");
         exit(1);
@@ -387,10 +390,14 @@ int main(int argc, char *argv[]) {
       }
 
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
-
-      nread = decrypt(buffer, nread, key, iv, temp);
+      memcpy(temp, buffer, nread-32);
+      if (compare_hmac(key, temp, buffer+nread)){
+          perror("Wrong");
+          exit(1);
+      }
+      nread = decrypt(temp, nread-32, key, iv, buffer);
       /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
-      nwrite = cwrite(tap_fd, temp, nread);
+      nwrite = cwrite(tap_fd, buffer, nread);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
   }
