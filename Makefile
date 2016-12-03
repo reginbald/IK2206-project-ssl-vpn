@@ -1,6 +1,6 @@
 # Generated automatically from Makefile.in by configure.
 CC=gcc
-CFLAGS=-g -I/usr/local/ssl/include   
+CFLAGS=-g -I/usr/local/ssl/include
 LD=-L/usr/local/ssl/lib  -lssl -lcrypto -ldl
 
 
@@ -19,4 +19,4 @@ HMAC.o: HMAC.c
 	$(CC) $(CFLAGS) -std=c99 -c HMAC.c $(LD)
 
 clean:	
-	rm *.o
+	rm *.o simpletun
