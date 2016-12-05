@@ -329,15 +329,15 @@ int main(int argc, char *argv[]) {
 
     // establish a connection to the server
     //printf("Attempting to to connect to the server... ");
-    //if (BIO_do_connect(bio) <= 0) {
-    //  fprintf(stderr, "Error connecting to server\n");
-    //  ERR_print_errors_fp(stderr);
-    //  BIO_free_all(bio);
-    //  BIO_free(out);
-    //  SSL_CTX_free(ctx);
-    //  exit(1);
-    //}
-    //printf("SUCCESS!\n");
+    if (BIO_do_connect(bio) <= 0) {
+      fprintf(stderr, "Error connecting to server\n");
+      ERR_print_errors_fp(stderr);
+      BIO_free_all(bio);
+      BIO_free(out);
+      SSL_CTX_free(ctx);
+      exit(1);
+    }
+    printf("SUCCESS!\n");
 
     // initiate the handshake with the server
     printf("Initiating SSL handshake with the server... ");
@@ -426,13 +426,13 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\n");
 
     /* Now wait for incoming connection */
-    //printf("Setting up the incoming connection... ");
-    //if (BIO_do_accept(acpt) <= 0) {
-    //  fprintf(stderr, "Error in connection\n");
-    //  ERR_print_errors_fp(stderr);
-    //  return (0);
-    //}
-    //printf("SUCCESS!\n");
+    printf("Setting up the incoming connection... ");
+    if (BIO_do_accept(acpt) <= 0) {
+      fprintf(stderr, "Error in connection\n");
+      ERR_print_errors_fp(stderr);
+      return (0);
+    }
+    printf("SUCCESS!\n");
 
     /* We only want one connection so remove and free
      * accept BIO
@@ -440,7 +440,7 @@ int main(int argc, char *argv[]) {
 
     bio = BIO_pop(acpt);
 
-    BIO_free_all(acpt);
+    //BIO_free_all(acpt);
 
     // wait for ssl handshake from the client
     printf("Waiting for SSL handshake...");
