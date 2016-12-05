@@ -296,8 +296,8 @@ int main(int argc, char *argv[]) {
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.crt", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.key", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
-    //SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/client.crt", NULL);
-    //SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
+    SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/client.crt", NULL);
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
     //if(! SSL_CTX_load_verify_locations(ctx, "client.crt", NULL))
     //{
     //    fprintf(stderr, "Error loading client certificate\n");
@@ -366,27 +366,8 @@ int main(int argc, char *argv[]) {
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.crt", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.key", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
-    //SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/client.crt", NULL);
-    //SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
-    //if (!SSL_CTX_use_certificate_file(ctx,"server.cert",SSL_FILETYPE_PEM)
-    //  || !SSL_CTX_use_PrivateKey_file(ctx,"server.key",SSL_FILETYPE_PEM)
-    //  || !SSL_CTX_check_private_key(ctx)) {
-    //    fprintf(stderr, "Error setting up SSL_CTX\n");
-    //    ERR_print_errors_fp(stderr);
-    //    return(0);
-    //}
-    //ctx = initialize_ctx("server.crt", "server.key");
-
-
-    /* Might do other things here like setting verify locations and
-     * DH and/or RSA temporary key callbacks
-     */
-    //SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER |
-    //                   SSL_VERIFY_FAIL_IF_NO_PEER_CERT, 0);
-//
-    //SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
-    //SSL_CTX_set_session_id_context(ctx, (void *)&ssl_session_ctx_id, sizeof(ssl_session_ctx_id));
-    //load_dh_params(ctx,DHFILE);
+    SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/server.crt", NULL);
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
     /* New SSL BIO setup as server */
     bio = BIO_new_ssl(ctx, 0);
@@ -440,7 +421,7 @@ int main(int argc, char *argv[]) {
 
     bio = BIO_pop(acpt);
 
-    //BIO_free_all(acpt);
+    BIO_free_all(acpt);
 
     // wait for ssl handshake from the client
     printf("Waiting for SSL handshake...");
