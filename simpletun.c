@@ -383,6 +383,10 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "Can't locate SSL pointer\n");
       /* whatever ... */
     }
+
+    const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:!kRSA:!PSK:!SRP:!MD5:!RC4";
+    long res = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);
+    if(!(1 == res)) printf("CIPHER ERROR");
     
     /* Don't want any retries */
     SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
