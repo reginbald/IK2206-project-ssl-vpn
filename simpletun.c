@@ -292,21 +292,13 @@ int main(int argc, char *argv[]) {
 
   /* SSL context setup */
   if (cliserv == CLIENT) {
-    ctx = SSL_CTX_new(SSLv23_client_method());
+    //ctx = SSL_CTX_new(SSLv23_client_method());
+    ctx = SSL_CTX_new(SSLv23_method());
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.asc", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.asc", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
     SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.asc", NULL);
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
-    //if(! SSL_CTX_load_verify_locations(ctx, "client.crt", NULL))
-    //{
-    //    fprintf(stderr, "Error loading client certificate\n");
-    //    ERR_print_errors_fp(stderr);
-    //    SSL_CTX_free(ctx);
-    //    return 0;
-    //}
-    //ctx = initialize_ctx("client.crt", "client.key");
-    //SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
 
     bio = BIO_new_ssl_connect(ctx);
     
@@ -367,7 +359,8 @@ int main(int argc, char *argv[]) {
 
 
   } else {
-    ctx = SSL_CTX_new(SSLv23_server_method());
+    //ctx = SSL_CTX_new(SSLv23_server_method());
+    ctx = SSL_CTX_new(SSLv23_method());
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.asc", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.asc", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
