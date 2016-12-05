@@ -318,7 +318,7 @@ int main(int argc, char *argv[]) {
     }
 
     const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:!kRSA:!PSK:!SRP:!MD5:!RC4";
-    res = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);
+    long res = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);
     if(!(1 == res)) printf("CIPHER ERROR");
 
     /* Don't want any retries */
