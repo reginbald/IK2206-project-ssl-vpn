@@ -290,19 +290,6 @@ int main(int argc, char *argv[]) {
     usage();
   }
 
-  /* initialize tun/tap interface */
-  if ( (tap_fd = tun_alloc(if_name, flags | IFF_NO_PI)) < 0 ) {
-    my_err("Error connecting to tun/tap interface %s!\n", if_name);
-    exit(1);
-  }
-
-  do_debug("Successfully connected to interface %s\n", if_name);
-
-  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-    perror("socket()");
-    exit(1);
-  }
-
   /* SSL context setup */
   if (cliserv == CLIENT) {
     ctx = SSL_CTX_new(SSLv23_client_method());
@@ -467,6 +454,19 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\n");
 
     BIO_flush(bio);
+  }
+
+  /* initialize tun/tap interface */
+  if ( (tap_fd = tun_alloc(if_name, flags | IFF_NO_PI)) < 0 ) {
+    my_err("Error connecting to tun/tap interface %s!\n", if_name);
+    exit(1);
+  }
+
+  do_debug("Successfully connected to interface %s\n", if_name);
+
+  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    perror("socket()");
+    exit(1);
   }
 
   if (cliserv == CLIENT) {
