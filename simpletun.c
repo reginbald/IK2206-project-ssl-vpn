@@ -217,15 +217,13 @@ int main(int argc, char *argv[]) {
   unsigned char *iv = (unsigned char *)"01234567890123456";
 
   /* Set up the library */
-  //ERR_load_crypto_strings();
-  //OpenSSL_add_all_algorithms();
-  ////OPENSSL_config(NULL);
-  //ERR_load_BIO_strings();
-
   ERR_load_crypto_strings();
   ERR_load_SSL_strings();
+  ERR_load_BIO_strings();
   OpenSSL_add_all_algorithms();
   SSL_library_init();
+  SSLeay_add_ssl_algorithms();
+  OPENSSL_config(NULL);
 
   BIO * bio, *bbio, *acpt, *out;
   SSL * ssl;
@@ -292,21 +290,25 @@ int main(int argc, char *argv[]) {
   /* SSL context setup */
   if (cliserv == CLIENT) {
     ctx = SSL_CTX_new(SSLv23_client_method());
-    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.crt", SSL_FILETYPE_PEM) <= 0) {
+    if (!ctx) {
         ERR_print_errors_fp(stderr);
         exit(1);
+    }
+    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.crt", SSL_FILETYPE_PEM) <= 0) {
+        ERR_print_errors_fp(stderr);
+        exit(2);
     }
     if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.key", SSL_FILETYPE_PEM) <= 0) {
         ERR_print_errors_fp(stderr);
-        exit(1);
+        exit(3);
     }
     if (SSL_CTX_check_private_key(ctx) <= 0) {
         ERR_print_errors_fp(stderr);
-        exit(1);
+        exit(4);
     }
     if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL) <= 0) {
         ERR_print_errors_fp(stderr);
-        exit(1);
+        exit(5);
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
@@ -315,8 +317,8 @@ int main(int argc, char *argv[]) {
     BIO_get_ssl(bio, &ssl);
 
     if (!ssl) {
-      fprintf(stderr, "Can't locate SSL pointer\n");
-      /* whatever ... */
+      ERR_print_errors_fp(stderr);
+        exit(6);
     }
 
     /* Don't want any retries */
@@ -366,21 +368,25 @@ int main(int argc, char *argv[]) {
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
-    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.crt", SSL_FILETYPE_PEM) <= 0) {
+    if (!ctx) {
         ERR_print_errors_fp(stderr);
         exit(1);
+    }
+    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.crt", SSL_FILETYPE_PEM) <= 0) {
+        ERR_print_errors_fp(stderr);
+        exit(2);
     }
     if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.key", SSL_FILETYPE_PEM) <= 0) {
         ERR_print_errors_fp(stderr);
-        exit(1);
+        exit(3);
     }
     if (SSL_CTX_check_private_key(ctx) <= 0) {
         ERR_print_errors_fp(stderr);
-        exit(1);
+        exit(4);
     }
     if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL) <= 0) {
         ERR_print_errors_fp(stderr);
-        exit(1);
+        exit(5);
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
@@ -390,8 +396,8 @@ int main(int argc, char *argv[]) {
     BIO_get_ssl(bio, &ssl);
 
     if (!ssl) {
-      fprintf(stderr, "Can't locate SSL pointer\n");
-      /* whatever ... */
+      ERR_print_errors_fp(stderr);
+        exit(6);
     }
 
     //const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:kRSA:PSK:SRP:MD5:RC4";
