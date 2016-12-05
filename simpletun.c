@@ -340,6 +340,7 @@ int main(int argc, char *argv[]) {
   ERR_load_crypto_strings();
   OpenSSL_add_all_algorithms();
   OPENSSL_config(NULL);
+  ERR_load_SSL_strings();
 
   ERR_load_BIO_strings();
 
@@ -352,10 +353,18 @@ int main(int argc, char *argv[]) {
 
   /* SSL context setup */
   if (cliserv == CLIENT) {
-    ctx = initialize_ctx("client.crt", "client.key");
-    SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
+    ctx = SSL_CTX_new(SSLv23_client_method());
+    if(! SSL_CTX_load_verify_locations(ctx, "client.crt", NULL))
+    {
+        fprintf(stderr, "Error loading client certificate\n");
+        ERR_print_errors_fp(stderr);
+        SSL_CTX_free(ctx);
+        return 0;
+    }
+    //ctx = initialize_ctx("client.crt", "client.key");
+    //SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
     bio = BIO_new_ssl_connect(ctx);
-
+    
     BIO_get_ssl(bio, &ssl);
 
     if (!ssl) {
@@ -372,7 +381,7 @@ int main(int argc, char *argv[]) {
     BIO_set_conn_port(bio, "4433");
 
     // create a buffer to print to the screen
-    out = BIO_new_fp(stdout, BIO_NOCLOSE);
+    //out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
     // establish a connection to the server
     printf("Attempting to to connect to the server... ");
@@ -388,7 +397,7 @@ int main(int argc, char *argv[]) {
 
     // initiate the handshake with the server
     printf("Initiating SSL handshake with the server... ");
-    if (BIO_do_handshake(bio) <= 0) {
+    if (BIO_do_handshake(sbio) <= 0) {
       fprintf(stderr, "Error establishing SSL connection\n");
       ERR_print_errors_fp(stderr);
       BIO_free_all(bio);
@@ -409,18 +418,26 @@ int main(int argc, char *argv[]) {
 
 
   } else {
-    ctx = initialize_ctx("server.crt", "server.key");
+    ctx = SSL_CTX_new(SSLv23_server_method());
+    if (!SSL_CTX_use_certificate_file(ctx,"server.cert",SSL_FILETYPE_PEM)
+      || !SSL_CTX_use_PrivateKey_file(ctx,"server.key",SSL_FILETYPE_PEM)
+      || !SSL_CTX_check_private_key(ctx)) {
+        fprintf(stderr, "Error setting up SSL_CTX\n");
+        ERR_print_errors_fp(stderr);
+        return(0);
+  }
+    //ctx = initialize_ctx("server.crt", "server.key");
 
 
     /* Might do other things here like setting verify locations and
      * DH and/or RSA temporary key callbacks
      */
-    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER |
-                       SSL_VERIFY_FAIL_IF_NO_PEER_CERT, 0);
-
-    SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
-    SSL_CTX_set_session_id_context(ctx, (void *)&ssl_session_ctx_id, sizeof(ssl_session_ctx_id));
-    load_dh_params(ctx,DHFILE);
+    //SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER |
+    //                   SSL_VERIFY_FAIL_IF_NO_PEER_CERT, 0);
+//
+    //SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
+    //SSL_CTX_set_session_id_context(ctx, (void *)&ssl_session_ctx_id, sizeof(ssl_session_ctx_id));
+    //load_dh_params(ctx,DHFILE);
 
     /* New SSL BIO setup as server */
     bio = BIO_new_ssl(ctx, 0);

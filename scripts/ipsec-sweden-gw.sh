@@ -18,6 +18,6 @@ ipsec pki --pub --in private/ClientKey.pem --type rsa | \
 
 iptables -t nat -A POSTROUTING -o eth14 ! -p esp -j SNAT --to-source 10.0.2.4
 
-sudo route add -net 10.0.30.0 netmask 255.255.255.0 gw 10.0.5.1
+sudo route add -net 10.20.5.0 netmask 255.255.255.0 gw 10.0.5.1
 
 #https://www.zeitgeist.se/2013/11/22/strongswan-howto-create-your-own-vpn/
