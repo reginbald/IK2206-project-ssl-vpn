@@ -464,9 +464,16 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     printf("SUCCESS!\n");
-
     
-    SSL_SESSION *session =SSL_get_session(ssl);
+    if (ssl == NULL)
+      printf("SSL IS NULL!\n");
+
+    if (out == NULL)
+      printf("OUT IS NULL!\n");
+    
+    SSL_SESSION *session = SSL_get_session(ssl);
+    if (session == NULL)
+      printf("SESSION IS NULL!\n");
     SSL_SESSION_print(out, session);
 
     BIO_flush(bio);
