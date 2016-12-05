@@ -397,7 +397,7 @@ int main(int argc, char *argv[]) {
 
     // initiate the handshake with the server
     printf("Initiating SSL handshake with the server... ");
-    if (BIO_do_handshake(sbio) <= 0) {
+    if (BIO_do_handshake(bio) <= 0) {
       fprintf(stderr, "Error establishing SSL connection\n");
       ERR_print_errors_fp(stderr);
       BIO_free_all(bio);
