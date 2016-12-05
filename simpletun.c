@@ -442,7 +442,7 @@ int main(int argc, char *argv[]) {
 
     bio = BIO_pop(acpt);
 
-    BIO_free_all(acpt);
+    //BIO_free_all(acpt);
 
     // wait for ssl handshake from the client
     printf("Waiting for SSL handshake...\n");
