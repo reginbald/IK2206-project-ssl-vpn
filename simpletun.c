@@ -217,12 +217,15 @@ int main(int argc, char *argv[]) {
   unsigned char *iv = (unsigned char *)"01234567890123456";
 
   /* Set up the library */
-  ERR_load_crypto_strings();
-  OpenSSL_add_all_algorithms();
-  OPENSSL_config(NULL);
-  ERR_load_SSL_strings();
+  //ERR_load_crypto_strings();
+  //OpenSSL_add_all_algorithms();
+  ////OPENSSL_config(NULL);
+  //ERR_load_SSL_strings();
+  //ERR_load_BIO_strings();
 
-  ERR_load_BIO_strings();
+  ERR_load_crypto_strings();
+  ERR_load_SSL_strings();
+  OpenSSL_add_all_algorithms();
 
   BIO * bio, *bbio, *acpt, *out;
   SSL * ssl;
