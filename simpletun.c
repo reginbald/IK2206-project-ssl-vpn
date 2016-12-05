@@ -226,6 +226,7 @@ int main(int argc, char *argv[]) {
   ERR_load_crypto_strings();
   ERR_load_SSL_strings();
   OpenSSL_add_all_algorithms();
+  SSL_library_init();
 
   BIO * bio, *bbio, *acpt, *out;
   SSL * ssl;
