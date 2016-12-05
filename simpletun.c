@@ -309,10 +309,7 @@ int main(int argc, char *argv[]) {
         printf("ERROR SSL_CTX_load_verify_locations");
         exit(1);
     }
-    if (SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL) <= 0) {
-        printf("ERROR SSL_CTX_set_verify");
-        exit(1);
-    }
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
     bio = BIO_new_ssl_connect(ctx);
     
@@ -390,10 +387,7 @@ int main(int argc, char *argv[]) {
         printf("ERROR SSL_CTX_load_verify_locations");
         exit(1);
     }
-    if (SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL) <= 0) {
-        printf("ERROR SSL_CTX_set_verify");
-        exit(1);
-    }
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
     /* New SSL BIO setup as server */
     bio = BIO_new_ssl(ctx, 0);
