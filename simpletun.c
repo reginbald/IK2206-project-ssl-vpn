@@ -416,6 +416,8 @@ int main(int argc, char *argv[]) {
      */
     BIO_set_accept_bios(acpt, bio);
 
+    out = BIO_new_fp(stdout, BIO_NOCLOSE);
+
     /* Setup accept BIO */
     printf("Setting up the accept BIO... ");
     if (BIO_do_accept(acpt) <= 0) {
@@ -463,7 +465,7 @@ int main(int argc, char *argv[]) {
     }
     printf("SUCCESS!\n");
 
-    out = BIO_new_fp(stdout, BIO_NOCLOSE);
+    
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
 
