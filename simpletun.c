@@ -296,7 +296,7 @@ int main(int argc, char *argv[]) {
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.crt", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.key", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
-    SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/client.crt", NULL);
+    SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL);
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
     //if(! SSL_CTX_load_verify_locations(ctx, "client.crt", NULL))
     //{
@@ -366,7 +366,7 @@ int main(int argc, char *argv[]) {
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.crt", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.key", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
-    SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/server.crt", NULL);
+    SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL);
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
     /* New SSL BIO setup as server */
