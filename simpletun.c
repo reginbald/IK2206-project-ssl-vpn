@@ -292,8 +292,7 @@ int main(int argc, char *argv[]) {
 
   /* SSL context setup */
   if (cliserv == CLIENT) {
-    //ctx = SSL_CTX_new(SSLv23_client_method());
-    ctx = SSL_CTX_new(SSLv23_method());
+    ctx = SSL_CTX_new(SSLv23_client_method());
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.asc", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.asc", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
@@ -309,7 +308,7 @@ int main(int argc, char *argv[]) {
       /* whatever ... */
     }
 
-    const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:!kRSA:!PSK:!SRP:!MD5:!RC4";
+    const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:kRSA:PSK:SRP:MD5:RC4";
     long res = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);
     if(!(1 == res)) printf("CIPHER ERROR");
 
@@ -359,8 +358,7 @@ int main(int argc, char *argv[]) {
 
 
   } else {
-    //ctx = SSL_CTX_new(SSLv23_server_method());
-    ctx = SSL_CTX_new(SSLv23_method());
+    ctx = SSL_CTX_new(SSLv23_server_method());
     SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.asc", SSL_FILETYPE_PEM);
     SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.asc", SSL_FILETYPE_PEM);
     SSL_CTX_check_private_key(ctx);
@@ -377,7 +375,7 @@ int main(int argc, char *argv[]) {
       /* whatever ... */
     }
 
-    const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:!kRSA:!PSK:!SRP:!MD5:!RC4";
+    const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:kRSA:PSK:SRP:MD5:RC4";
     long res = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);
     if(!(1 == res)) printf("CIPHER ERROR");
     
