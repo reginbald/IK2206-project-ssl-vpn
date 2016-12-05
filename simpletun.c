@@ -303,13 +303,13 @@ int main(int argc, char *argv[]) {
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
-    if (!SSL_CTX_use_certificate_file(ctx,"server.cert",SSL_FILETYPE_PEM)
-      || !SSL_CTX_use_PrivateKey_file(ctx,"server.key",SSL_FILETYPE_PEM)
-      || !SSL_CTX_check_private_key(ctx)) {
-        fprintf(stderr, "Error setting up SSL_CTX\n");
-        ERR_print_errors_fp(stderr);
-        return(0);
-  }
+    //if (!SSL_CTX_use_certificate_file(ctx,"server.cert",SSL_FILETYPE_PEM)
+    //  || !SSL_CTX_use_PrivateKey_file(ctx,"server.key",SSL_FILETYPE_PEM)
+    //  || !SSL_CTX_check_private_key(ctx)) {
+    //    fprintf(stderr, "Error setting up SSL_CTX\n");
+    //    ERR_print_errors_fp(stderr);
+    //    return(0);
+    //}
     //ctx = initialize_ctx("server.crt", "server.key");
 
 
