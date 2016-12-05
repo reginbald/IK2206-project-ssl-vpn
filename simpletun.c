@@ -306,7 +306,7 @@ int main(int argc, char *argv[]) {
     //    return 0;
     //}
     //ctx = initialize_ctx("client.crt", "client.key");
-    //SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
+    SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
     bio = BIO_new_ssl_connect(ctx);
     
     BIO_get_ssl(bio, &ssl);
@@ -368,6 +368,8 @@ int main(int argc, char *argv[]) {
     SSL_CTX_check_private_key(ctx);
     SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.asc", NULL);
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
+
+    SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
 
     /* New SSL BIO setup as server */
     bio = BIO_new_ssl(ctx, 0);
