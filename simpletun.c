@@ -220,7 +220,6 @@ int main(int argc, char *argv[]) {
   //ERR_load_crypto_strings();
   //OpenSSL_add_all_algorithms();
   ////OPENSSL_config(NULL);
-  //ERR_load_SSL_strings();
   //ERR_load_BIO_strings();
 
   ERR_load_crypto_strings();
@@ -320,10 +319,6 @@ int main(int argc, char *argv[]) {
       /* whatever ... */
     }
 
-    //const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:kRSA:PSK:SRP:MD5:RC4";
-    //long res = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);
-    //if(!(1 == res)) printf("CIPHER ERROR");
-
     /* Don't want any retries */
     SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
     /* We might want to do other things with ssl here */
@@ -348,7 +343,7 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\n");
 
     // initiate the handshake with the server
-    printf("Initiating SSL handshake with the server... ");
+    printf("Initiating SSL handshake with the server... \n");
     if (BIO_do_handshake(bio) <= 0) {
       fprintf(stderr, "Error establishing SSL connection\n");
       ERR_print_errors_fp(stderr);
@@ -359,7 +354,7 @@ int main(int argc, char *argv[]) {
     }
     printf("SUCCESS!\n");
     // Get the random number from the server
-    printf("Waiting for random number from server... ");
+    printf("Waiting for random number from server... \n");
     memset(tmpbuf, '\0', 11);
     memset(number, '\0', 11);
     int len = BIO_read(bio, tmpbuf, 10);
@@ -422,7 +417,7 @@ int main(int argc, char *argv[]) {
     BIO_set_accept_bios(acpt, bio);
 
     /* Setup accept BIO */
-    printf("Setting up the accept BIO... ");
+    printf("Setting up the accept BIO... \n");
     if (BIO_do_accept(acpt) <= 0) {
       fprintf(stderr, "Error setting up accept BIO\n");
       ERR_print_errors_fp(stderr);
@@ -431,7 +426,7 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\n");
 
     /* Now wait for incoming connection */
-    printf("Setting up the incoming connection... ");
+    printf("Setting up the incoming connection... \n");
     if (BIO_do_accept(acpt) <= 0) {
       fprintf(stderr, "Error in connection\n");
       ERR_print_errors_fp(stderr);
@@ -448,7 +443,7 @@ int main(int argc, char *argv[]) {
     BIO_free_all(acpt);
 
     // wait for ssl handshake from the client
-    printf("Waiting for SSL handshake...");
+    printf("Waiting for SSL handshake...\n");
     if (BIO_do_handshake(bio) <= 0) {
       fprintf(stderr, "Error in SSL handshake\n");
       ERR_print_errors_fp(stderr);
@@ -460,7 +455,7 @@ int main(int argc, char *argv[]) {
     sprintf(number, "%d", rand());
 
     // send the random number to the client
-    printf("Sending the random number challenge to the client. Number is %s... ", number);
+    printf("Sending the random number challenge to the client. Number is %s... \n", number);
     if (BIO_write(bio, number, strlen(number)) <= 0) {
       fprintf(stderr, "Error in sending random number\n");
       ERR_print_errors_fp(stderr);
