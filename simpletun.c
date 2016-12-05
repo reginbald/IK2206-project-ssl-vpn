@@ -238,13 +238,13 @@ int main(int argc, char *argv[]) {
   /* SSL context setup */
   if (cliserv == CLIENT) {
     ctx = SSL_CTX_new(SSLv23_client_method());
-    if(! SSL_CTX_load_verify_locations(ctx, "client.crt", NULL))
-    {
-        fprintf(stderr, "Error loading client certificate\n");
-        ERR_print_errors_fp(stderr);
-        SSL_CTX_free(ctx);
-        return 0;
-    }
+    //if(! SSL_CTX_load_verify_locations(ctx, "client.crt", NULL))
+    //{
+    //    fprintf(stderr, "Error loading client certificate\n");
+    //    ERR_print_errors_fp(stderr);
+    //    SSL_CTX_free(ctx);
+    //    return 0;
+    //}
     //ctx = initialize_ctx("client.crt", "client.key");
     //SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
     bio = BIO_new_ssl_connect(ctx);
