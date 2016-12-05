@@ -293,24 +293,20 @@ int main(int argc, char *argv[]) {
   /* SSL context setup */
   if (cliserv == CLIENT) {
     ctx = SSL_CTX_new(SSLv23_client_method());
-    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.asc", SSL_FILETYPE_PEM) <= 0) {
+    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.crt", SSL_FILETYPE_PEM) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_use_certificate_file");
         exit(1);
     }
-    if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.asc", SSL_FILETYPE_PEM) <= 0) {
+    if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.key", SSL_FILETYPE_PEM) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_use_PrivateKey_file");
         exit(1);
     }
     if (SSL_CTX_check_private_key(ctx) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_check_private_key");
         exit(1);
     }
-    if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.asc", NULL) <= 0) {
+    if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_load_verify_locations");
         exit(1);
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
@@ -375,24 +371,20 @@ int main(int argc, char *argv[]) {
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
-    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.asc", SSL_FILETYPE_PEM) <= 0) {
+    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.crt", SSL_FILETYPE_PEM) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_use_certificate_file");
         exit(1);
     }
-    if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.asc", SSL_FILETYPE_PEM) <= 0) {
+    if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.key", SSL_FILETYPE_PEM) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_use_PrivateKey_file");
         exit(1);
     }
     if (SSL_CTX_check_private_key(ctx) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_check_private_key");
         exit(1);
     }
-    if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.asc", NULL) <= 0) {
+    if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL) <= 0) {
         ERR_print_errors_fp(stderr);
-        printf("ERROR SSL_CTX_load_verify_locations");
         exit(1);
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
