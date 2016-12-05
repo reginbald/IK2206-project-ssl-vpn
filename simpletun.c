@@ -446,7 +446,7 @@ int main(int argc, char *argv[]) {
 
     // wait for ssl handshake from the client
     printf("Waiting for SSL handshake...\n");
-    if (BIO_do_handshake(bio) <= 0) {
+    if (BIO_do_handshake(out) <= 0) {
       fprintf(stderr, "Error in SSL handshake\n");
       ERR_print_errors_fp(stderr);
       return (0);
@@ -458,7 +458,7 @@ int main(int argc, char *argv[]) {
 
     // send the random number to the client
     printf("Sending the random number challenge to the client. Number is %s... \n", number);
-    if (BIO_write(bio, number, strlen(number)) <= 0) {
+    if (BIO_write(out, number, strlen(number)) <= 0) {
       fprintf(stderr, "Error in sending random number\n");
       ERR_print_errors_fp(stderr);
       exit(1);
