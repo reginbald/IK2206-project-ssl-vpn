@@ -440,7 +440,7 @@ int main(int argc, char *argv[]) {
      * accept BIO
      */
 
-    bio = BIO_pop(acpt);
+    out = BIO_pop(acpt);
 
     //BIO_free_all(acpt);
 
