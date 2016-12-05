@@ -328,16 +328,16 @@ int main(int argc, char *argv[]) {
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
     // establish a connection to the server
-    printf("Attempting to to connect to the server... ");
-    if (BIO_do_connect(bio) <= 0) {
-      fprintf(stderr, "Error connecting to server\n");
-      ERR_print_errors_fp(stderr);
-      BIO_free_all(bio);
-      BIO_free(out);
-      SSL_CTX_free(ctx);
-      exit(1);
-    }
-    printf("SUCCESS!\n");
+    //printf("Attempting to to connect to the server... ");
+    //if (BIO_do_connect(bio) <= 0) {
+    //  fprintf(stderr, "Error connecting to server\n");
+    //  ERR_print_errors_fp(stderr);
+    //  BIO_free_all(bio);
+    //  BIO_free(out);
+    //  SSL_CTX_free(ctx);
+    //  exit(1);
+    //}
+    //printf("SUCCESS!\n");
 
     // initiate the handshake with the server
     printf("Initiating SSL handshake with the server... ");
@@ -416,8 +416,6 @@ int main(int argc, char *argv[]) {
      */
     BIO_set_accept_bios(acpt, bio);
 
-    out = BIO_new_fp(stdout, BIO_NOCLOSE);
-
     /* Setup accept BIO */
     printf("Setting up the accept BIO... ");
     if (BIO_do_accept(acpt) <= 0) {
@@ -465,12 +463,7 @@ int main(int argc, char *argv[]) {
     }
     printf("SUCCESS!\n");
     
-    if (ssl == NULL)
-      printf("SSL IS NULL!\n");
-
-    if (out == NULL)
-      printf("OUT IS NULL!\n");
-    
+    out = BIO_new_fp(stdout, BIO_NOCLOSE);
     SSL_SESSION *session = SSL_get_session(ssl);
     if (session == NULL)
       printf("SESSION IS NULL!\n");
