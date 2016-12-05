@@ -426,13 +426,13 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\n");
 
     /* Now wait for incoming connection */
-    printf("Setting up the incoming connection... ");
-    if (BIO_do_accept(acpt) <= 0) {
-      fprintf(stderr, "Error in connection\n");
-      ERR_print_errors_fp(stderr);
-      return (0);
-    }
-    printf("SUCCESS!\n");
+    //printf("Setting up the incoming connection... ");
+    //if (BIO_do_accept(acpt) <= 0) {
+    //  fprintf(stderr, "Error in connection\n");
+    //  ERR_print_errors_fp(stderr);
+    //  return (0);
+    //}
+    //printf("SUCCESS!\n");
 
     /* We only want one connection so remove and free
      * accept BIO
