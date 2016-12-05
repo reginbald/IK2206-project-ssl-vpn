@@ -399,20 +399,16 @@ int main(int argc, char *argv[]) {
       ERR_print_errors_fp(stderr);
         exit(6);
     }
-
-    //const char* const PREFERRED_CIPHERS = "HIGH:!aNULL:kRSA:PSK:SRP:MD5:RC4";
-    //long res = SSL_set_cipher_list(ssl, PREFERRED_CIPHERS);
-    //if(!(1 == res)) printf("CIPHER ERROR");
     
     /* Don't want any retries */
     SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
 
     /* Create the buffering BIO */
 
-    bbio = BIO_new(BIO_f_buffer());
+    //bbio = BIO_new(BIO_f_buffer());
 
     /* Add to chain */
-    bio = BIO_push(bbio, bio);
+    //bio = BIO_push(bbio, bio);
 
     acpt = BIO_new_accept("4433");
     /* By doing this when a new connection is established
