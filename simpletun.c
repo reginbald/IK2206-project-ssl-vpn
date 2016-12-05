@@ -325,7 +325,7 @@ int main(int argc, char *argv[]) {
     BIO_set_conn_port(bio, "4433");
 
     // create a buffer to print to the screen
-    //out = BIO_new_fp(stdout, BIO_NOCLOSE);
+    out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
     // establish a connection to the server
     printf("Attempting to to connect to the server... ");
