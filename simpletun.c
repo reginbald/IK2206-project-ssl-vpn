@@ -235,6 +235,74 @@ int main(int argc, char *argv[]) {
   char tmpbuf[11];
   static int ssl_session_ctx_id = 1;
 
+  /* Check command line options */
+  while ((option = getopt(argc, argv, "i:s:c:p:uahd")) > 0) {
+    switch (option) {
+    case 'd':
+      debug = 1;
+      break;
+    case 'h':
+      usage();
+      break;
+    case 'i':
+      strncpy(if_name, optarg, IFNAMSIZ - 1);
+      break;
+    case 's':
+      cliserv = SERVER;
+      strncpy(remote_ip, optarg, 15);
+      break;
+    case 'c':
+      cliserv = CLIENT;
+      strncpy(remote_ip, optarg, 15);
+      break;
+    case 'p':
+      port = atoi(optarg);
+      break;
+    case 'u':
+      flags = IFF_TUN;
+      break;
+    case 'a':
+      flags = IFF_TAP;
+      header_len = ETH_HDR_LEN;
+      break;
+    default:
+      my_err("Unknown option %c\n", option);
+      usage();
+    }
+  }
+
+  argv += optind;
+  argc -= optind;
+
+  if (argc > 0) {
+    my_err("Too many options!\n");
+    usage();
+  }
+
+  if (*if_name == '\0') {
+    my_err("Must specify interface name!\n");
+    usage();
+  } else if (cliserv < 0) {
+    my_err("Must specify client or server mode!\n");
+    usage();
+  } else if ((*remote_ip == '\0')) {
+    my_err("Must specify server address!\n");
+    usage();
+  }
+
+  /* initialize tun/tap interface */
+  if ( (tap_fd = tun_alloc(if_name, flags | IFF_NO_PI)) < 0 ) {
+    my_err("Error connecting to tun/tap interface %s!\n", if_name);
+    exit(1);
+  }
+
+  do_debug("Successfully connected to interface %s\n", if_name);
+
+  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    perror("socket()");
+    exit(1);
+  }
+
   /* SSL context setup */
   if (cliserv == CLIENT) {
     ctx = SSL_CTX_new(SSLv23_client_method());
@@ -399,74 +467,6 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\n");
 
     BIO_flush(bio);
-  }
-
-  /* Check command line options */
-  while ((option = getopt(argc, argv, "i:s:c:p:uahd")) > 0) {
-    switch (option) {
-    case 'd':
-      debug = 1;
-      break;
-    case 'h':
-      usage();
-      break;
-    case 'i':
-      strncpy(if_name, optarg, IFNAMSIZ - 1);
-      break;
-    case 's':
-      cliserv = SERVER;
-      strncpy(remote_ip, optarg, 15);
-      break;
-    case 'c':
-      cliserv = CLIENT;
-      strncpy(remote_ip, optarg, 15);
-      break;
-    case 'p':
-      port = atoi(optarg);
-      break;
-    case 'u':
-      flags = IFF_TUN;
-      break;
-    case 'a':
-      flags = IFF_TAP;
-      header_len = ETH_HDR_LEN;
-      break;
-    default:
-      my_err("Unknown option %c\n", option);
-      usage();
-    }
-  }
-
-  argv += optind;
-  argc -= optind;
-
-  if (argc > 0) {
-    my_err("Too many options!\n");
-    usage();
-  }
-
-  if (*if_name == '\0') {
-    my_err("Must specify interface name!\n");
-    usage();
-  } else if (cliserv < 0) {
-    my_err("Must specify client or server mode!\n");
-    usage();
-  } else if ((*remote_ip == '\0')) {
-    my_err("Must specify server address!\n");
-    usage();
-  }
-
-  /* initialize tun/tap interface */
-  if ( (tap_fd = tun_alloc(if_name, flags | IFF_NO_PI)) < 0 ) {
-    my_err("Error connecting to tun/tap interface %s!\n", if_name);
-    exit(1);
-  }
-
-  do_debug("Successfully connected to interface %s\n", if_name);
-
-  if ( (sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-    perror("socket()");
-    exit(1);
   }
 
   if (cliserv == CLIENT) {
