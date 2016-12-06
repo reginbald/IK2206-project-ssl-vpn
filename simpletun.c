@@ -241,6 +241,7 @@ int main(int argc, char *argv[]) {
   SSL_CTX * ctx;
   char number[10];
   char tmpbuf[11];
+  char session_change[32];
   static int ssl_session_ctx_id = 1;
 
   /* Check command line options */
@@ -615,9 +616,9 @@ int main(int argc, char *argv[]) {
     }
 
     if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
-      int len = BIO_read(bio, tmpbuf, 10);
-      strcpy(number, tmpbuf);
-      printf("SUCCESS!\nRandom number is: %s\n", number);
+      int len = BIO_read(bio, session_changed, 32);
+      printf("len: %d\n", len);
+      print_hex(session_changed, len);
       //if (readn == 32){
       //  printf("New session key\n");
       //} else if (readn == 16){
