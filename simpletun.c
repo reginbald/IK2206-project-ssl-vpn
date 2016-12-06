@@ -376,10 +376,10 @@ int main(int argc, char *argv[]) {
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
     printf("copying ket:\n");
-    memcpy(key, session->master_key, 32 * size_of(char));
+    memcpy(key, session->master_key, 256);
     print_hex(key, 32);
     printf("copying iv:\n");
-    memcpy(iv, session->master_key[32], 16 * size_of(char));
+    memcpy(iv, session->master_key[32], 128);
     print_hex(iv, 16);
 
   } else {
@@ -494,10 +494,10 @@ int main(int argc, char *argv[]) {
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
     printf("copying ket:\n");
-    memcpy(key, session->master_key, 32 * size_of(char));
+    memcpy(key, session->master_key, 256);
     print_hex(key, 32);
     printf("copying iv:\n");
-    memcpy(iv, session->master_key[32], 16 * size_of(char));
+    memcpy(iv, session->master_key[32], 128);
     print_hex(iv, 16);
   }
 
