@@ -618,7 +618,7 @@ int main(int argc, char *argv[]) {
       readn = read(STDIN, buf, sizeof(buf));
       printf("FROM ssl fd\n");
       if (readn == 32){
-        print("New session key\n");
+        printf("New session key\n");
       } else if (readn == 16){
         printf("New IV\n");
       } else {
