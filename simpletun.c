@@ -364,21 +364,22 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\nRandom number is: %s\n", number);
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
+    printf("MASTERKEY: %s",session->master_key);
 
-    // generate the random number for the challenge
-    srand((unsigned)time(NULL));
-    sprintf(number, "%d", rand());
-
-    // send the random number to the client
-    printf("Sending the random number challenge to the server. Number is %s... \n", number);
-    if (BIO_write(bio, number, strlen(number)) <= 0) {
-      fprintf(stderr, "Error in sending random number\n");
-      ERR_print_errors_fp(stderr);
-      exit(1);
-    }
-    printf("SUCCESS!\n");
-
-    BIO_flush(bio);
+    //// generate the random number for the challenge
+    //srand((unsigned)time(NULL));
+    //sprintf(number, "%d", rand());
+//
+    //// send the random number to the client
+    //printf("Sending the random number challenge to the server. Number is %s... \n", number);
+    //if (BIO_write(bio, number, strlen(number)) <= 0) {
+    //  fprintf(stderr, "Error in sending random number\n");
+    //  ERR_print_errors_fp(stderr);
+    //  exit(1);
+    //}
+    //printf("SUCCESS!\n");
+//
+    //BIO_flush(bio);
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
@@ -478,17 +479,18 @@ int main(int argc, char *argv[]) {
     BIO_flush(bio);
     
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
-    // Get the random number from the server
-    printf("Waiting for random number from client... \n");
-    memset(tmpbuf, '\0', 11);
-    memset(number, '\0', 11);
-    int len = BIO_read(bio, tmpbuf, 10);
-    strcpy(number, tmpbuf);
-    printf("SUCCESS!\nRandom number is: %s\n", number);
-    sleep(1);
+    //// Get the random number from the server
+    //printf("Waiting for random number from client... \n");
+    //memset(tmpbuf, '\0', 11);
+    //memset(number, '\0', 11);
+    //int len = BIO_read(bio, tmpbuf, 10);
+    //strcpy(number, tmpbuf);
+    //printf("SUCCESS!\nRandom number is: %s\n", number);
+    sleep(1); // sometimes the ssl pointer is not ready?
     BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
+    printf("MASTERKEY: %s",session->master_key);
   }
 
   /* initialize tun/tap interface */
