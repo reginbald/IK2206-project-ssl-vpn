@@ -578,9 +578,9 @@ int main(int argc, char *argv[]) {
   unsigned char *new_iv = (unsigned char*)malloc(16);
 
   printf("Available commands: \n");
-  printf("s 'new_key' : changes the session key \n");
-  printf("i 'new_iv'  : changes the IV \n");
-  printf("b           : breaks the current VPN tunnel\n");
+  printf("s : changes the session key \n");
+  printf("i : changes the IV \n");
+  printf("b : breaks the current VPN tunnel\n");
   while(1) {
     int ret;
     fd_set rd_set;
@@ -609,17 +609,22 @@ int main(int argc, char *argv[]) {
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
         if (buf[0] == 's') {
-          printf("Changing the session key\n");
+          printf("Changing the session key to:\n");
+          // generate random key
           int i;
           for (i = 0; i < 32 - 1; i++) {
             new_key[i] = (unsigned char) (rand() % 255 + 1);
           }
-          // send the random number to the client
-          printf("new key\n");
           print_hex(new_key, 32);
         }
         else if (buf[0] == 'i') {
-          printf("Changing the iv\n");
+          printf("Changing the iv to:\n");
+          // generate random iv
+          int i;
+          for (i = 0; i < 16 - 1; i++) {
+            new_iv[i] = (unsigned char) (rand() % 255 + 1);
+          }
+          print_hex(new_iv, 16);
         }
         else if (buf[0] == 'b') {
           printf("Breaking the current VPN\n");
