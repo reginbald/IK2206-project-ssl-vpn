@@ -626,7 +626,7 @@ int main(int argc, char *argv[]) {
             perror("Sending data");
             exit(1);
           }
-          printf("New session key sent!\n")
+          printf("New session key sent!\n");
         }
         else if (buf[0] == 'i') {
           printf("Changing the iv to:\n");
