@@ -662,7 +662,7 @@ int main(int argc, char *argv[]) {
           print_hex(new_iv, 16);
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'i';
-          for (i = 1; i < 16; i++){
+          for (i = 0; i < 16; i++){
             msg[i + 1] = new_iv[i];
           }
           if (BIO_write(bio, msg, 33) <= 0) {
