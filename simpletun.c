@@ -601,6 +601,11 @@ int main(int argc, char *argv[]) {
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
         printf("USER INPUT: Read %d bytes\n", readn);
+        int i;
+        for (i = 0; i < readn; i++){
+          printf("%s", buf[i]);
+        }
+        printf("\n");
       }
     }
 
