@@ -376,8 +376,10 @@ int main(int argc, char *argv[]) {
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
 
-    //key = session->master_key;
-    //iv =  session->master_key;
+    memcpy(key, session->master_key, 32 * sizeof(char));
+    key[32] = '\0';
+    memcpy(iv, (session->master_key + 32), 17 * sizeof(char));
+    iv[17] = '\0';
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
@@ -490,6 +492,10 @@ int main(int argc, char *argv[]) {
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
+    memcpy(key, session->master_key, 32 * sizeof(char));
+    key[32] = '\0';
+    memcpy(iv, (session->master_key + 32), 17 * sizeof(char));
+    iv[17] = '\0';
   }
 
   /* initialize tun/tap interface */
