@@ -241,7 +241,7 @@ int main(int argc, char *argv[]) {
   SSL_CTX * ctx;
   char number[10];
   char tmpbuf[11];
-  char session_changed[32];
+  char session_changed[33];
   static int ssl_session_ctx_id = 1;
 
   /* Check command line options */
@@ -640,7 +640,7 @@ int main(int argc, char *argv[]) {
           }
           print_hex(new_key, 32);
           printf("Sending new session key to server\n"); // todo insure it arrives in order
-          if (BIO_write(bio, new_key, 32) <= 0) {
+          if (BIO_write(bio, new_key, 33) <= 0) {
             fprintf(stderr, "Error in sending session key\n");
             ERR_print_errors_fp(stderr);
             exit(1);
@@ -656,7 +656,7 @@ int main(int argc, char *argv[]) {
             new_iv[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_iv, 16);
-          if (BIO_write(bio, new_iv, 32) <= 0) {
+          if (BIO_write(bio, new_iv, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
@@ -666,7 +666,9 @@ int main(int argc, char *argv[]) {
         }
         else if (buf[0] == 'b') {
           printf("Breaking the current VPN\n");
-          if (BIO_write(bio, "b", 32) <= 0) {
+          unsigned char *msg = (unsigned char*)malloc(33);
+          memcpy(msg[0], 'b', 8);
+          if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
