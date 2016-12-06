@@ -598,7 +598,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (FD_ISSET(STDIN, &rd_set)){
-      readn = read(fileDescriptor1, buf, sizeof(buf));
+      readn = read(STDIN, buf, sizeof(buf));
       do_debug("USER INPUT \n");
       if (readn > 0) {
         printf("Read %d bytes from channel1\n", readn);
