@@ -583,16 +583,24 @@ int main(int argc, char *argv[]) {
   printf("b : breaks the current VPN tunnel\n");
   while(1) {
     int ret;
-    fd_set rd_set;
+    fd_set rd_set, ssl_fd;
     char buf[256];
     int readn;
+
+    ssl_fd = SSL_get_fd(ssl);
+    if (ssl_fd < 0){
+      perror("ssl fd");
+      exit(1);
+    }
 
     FD_ZERO(&rd_set);
     FD_SET(tap_fd, &rd_set); 
     FD_SET(net_fd, &rd_set);
     FD_SET(STDIN, &rd_set); //stdin
+    FD_SET(ssl_fd, &rd_set); //ssl
 
     maxfd = tap_fd > net_fd ? (tap_fd > STDIN ? tap_fd : STDIN) : (net_fd > STDIN ? net_fd : STDIN);
+    maxfd = maxfd > ssl_fd ? maxfd : ssl_fd;
 
     ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
 
@@ -605,7 +613,11 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
-    if (FD_ISSET(STDIN, &rd_set)){
+    if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
+      printf("FROM ssl fd\n");
+    }
+
+    if (FD_ISSET(STDIN, &rd_set)){ // from console
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
         if (buf[0] == 's') {
@@ -617,13 +629,9 @@ int main(int argc, char *argv[]) {
           }
           print_hex(new_key, 32);
           printf("Sending new session key to server\n"); // todo insure it arrives in order
-          /* write packet */
-          nread = encrypt (new_key, nread, key, iv, temp);
-          unsigned char* t = generate_hmac(key, temp);
-          memcpy(temp+nread, t, 32);
-          nwrite = sendto(net_fd, temp, nread+32, 0, (struct sockaddr*) &remote, remotelen); 
-          if (nwrite < 0) {
-            perror("Sending data");
+          if (BIO_write(bio, new_key, 32) <= 0) {
+            fprintf(stderr, "Error in sending random number\n");
+            ERR_print_errors_fp(stderr);
             exit(1);
           }
           printf("New session key sent!\n");
@@ -686,6 +694,7 @@ int main(int argc, char *argv[]) {
           exit(1);
       }
       nread = decrypt(temp, nread-32, key, iv, buffer);
+
       /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
       nwrite = cwrite(tap_fd, buffer, nread);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
