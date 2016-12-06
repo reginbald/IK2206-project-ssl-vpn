@@ -641,7 +641,7 @@ int main(int argc, char *argv[]) {
           print_hex(new_key, 32);
           printf("Sending new session key to server\n"); // todo insure it arrives in order
           if (BIO_write(bio, new_key, 32) <= 0) {
-            fprintf(stderr, "Error in sending random number\n");
+            fprintf(stderr, "Error in sending session key\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
@@ -655,9 +655,20 @@ int main(int argc, char *argv[]) {
             new_iv[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_iv, 16);
+          if (BIO_write(bio, new_iv, 16) <= 0) {
+            fprintf(stderr, "Error in sending iv\n");
+            ERR_print_errors_fp(stderr);
+            exit(1);
+          }
+          printf("New iv sent!\n");
         }
         else if (buf[0] == 'b') {
           printf("Breaking the current VPN\n");
+          if (BIO_write(bio, "b", 1) <= 0) {
+            fprintf(stderr, "Error in sending iv\n");
+            ERR_print_errors_fp(stderr);
+            exit(1);
+          }
         }
         else 
           printf("Unknown command\n");
