@@ -615,15 +615,16 @@ int main(int argc, char *argv[]) {
     }
 
     if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
-      readn = read(STDIN, buf, sizeof(buf));
-      printf("FROM ssl fd: %d bytes\n", readn);
-      if (readn == 32){
-        printf("New session key\n");
-      } else if (readn == 16){
-        printf("New IV\n");
-      } else {
-        printf("Break current VPN\n");
-      }
+      int len = BIO_read(bio, tmpbuf, 10);
+      strcpy(number, tmpbuf);
+      printf("SUCCESS!\nRandom number is: %s\n", number);
+      //if (readn == 32){
+      //  printf("New session key\n");
+      //} else if (readn == 16){
+      //  printf("New IV\n");
+      //} else {
+      //  printf("Break current VPN\n");
+      //}
     }
 
     if (FD_ISSET(STDIN, &rd_set)){ // from console
