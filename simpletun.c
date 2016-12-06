@@ -641,6 +641,7 @@ int main(int argc, char *argv[]) {
           print_hex(new_key, 32);
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 's';
+          memcpy(msg + 1, new_key, 256);
           printf("Sending new session key to server\n"); // todo insure it arrives in order
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending session key\n");
