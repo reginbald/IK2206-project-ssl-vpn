@@ -595,7 +595,7 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
-    if (FD_ISSET(STDIN, &fds)){
+    if (FD_ISSET(STDIN, &rd_set)){
       printf("input from user \n");
     }
 
