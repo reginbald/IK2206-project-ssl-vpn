@@ -220,10 +220,10 @@ int main(int argc, char *argv[]) {
   maxfd = (tap_fd > net_fd) ? tap_fd : net_fd;
 
   //Init of encryption
-  unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
+  unsigned char *key = (unsigned char*)malloc(32);
 
   /* A 128 bit IV */
-  unsigned char *iv = (unsigned char *)"01234567890123456";
+  unsigned char *iv = (unsigned char*)malloc(16);
 
   /* Set up the library */
   ERR_load_crypto_strings();
