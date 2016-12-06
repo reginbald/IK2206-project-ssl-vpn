@@ -583,7 +583,8 @@ int main(int argc, char *argv[]) {
   printf("b : breaks the current VPN tunnel\n");
   while(1) {
     int ret;
-    fd_set rd_set, ssl_fd;
+    fd_set rd_set;
+    int ssl_fd;
     char buf[256];
     int readn;
 
