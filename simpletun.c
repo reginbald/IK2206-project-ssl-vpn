@@ -639,6 +639,8 @@ int main(int argc, char *argv[]) {
             new_key[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_key, 32);
+          unsigned char *msg = (unsigned char*)malloc(33);
+          msg[0] = 's';
           printf("Sending new session key to server\n"); // todo insure it arrives in order
           if (BIO_write(bio, new_key, 33) <= 0) {
             fprintf(stderr, "Error in sending session key\n");
@@ -646,6 +648,7 @@ int main(int argc, char *argv[]) {
             exit(1);
           }
           BIO_flush(bio);
+          free(msg);
           printf("New session key sent!\n");
         }
         else if (buf[0] == 'i') {
@@ -656,24 +659,28 @@ int main(int argc, char *argv[]) {
             new_iv[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_iv, 16);
-          if (BIO_write(bio, new_iv, 33) <= 0) {
-            fprintf(stderr, "Error in sending iv\n");
-            ERR_print_errors_fp(stderr);
-            exit(1);
-          }
-          BIO_flush(bio);
-          printf("New iv sent!\n");
-        }
-        else if (buf[0] == 'b') {
-          printf("Breaking the current VPN\n");
           unsigned char *msg = (unsigned char*)malloc(33);
-          memcpy(msg[0], 'b', 8);
+          msg[0] = 'i';
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
           BIO_flush(bio);
+          free(msg);
+          printf("New iv sent!\n");
+        }
+        else if (buf[0] == 'b') {
+          printf("Breaking the current VPN\n");
+          unsigned char *msg = (unsigned char*)malloc(33);
+          msg[0] = 'b';
+          if (BIO_write(bio, msg, 33) <= 0) {
+            fprintf(stderr, "Error in sending iv\n");
+            ERR_print_errors_fp(stderr);
+            exit(1);
+          }
+          BIO_flush(bio);
+          free(msg);
           printf("Break message sent\n");
         }
         else 
