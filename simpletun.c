@@ -645,6 +645,7 @@ int main(int argc, char *argv[]) {
             ERR_print_errors_fp(stderr);
             exit(1);
           }
+          BIO_flush(bio);
           printf("New session key sent!\n");
         }
         else if (buf[0] == 'i') {
@@ -660,6 +661,7 @@ int main(int argc, char *argv[]) {
             ERR_print_errors_fp(stderr);
             exit(1);
           }
+          BIO_flush(bio);
           printf("New iv sent!\n");
         }
         else if (buf[0] == 'b') {
@@ -669,6 +671,8 @@ int main(int argc, char *argv[]) {
             ERR_print_errors_fp(stderr);
             exit(1);
           }
+          BIO_flush(bio);
+          printf("Break message sent\n")
         }
         else 
           printf("Unknown command\n");
