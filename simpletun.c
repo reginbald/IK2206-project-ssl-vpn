@@ -574,8 +574,8 @@ int main(int argc, char *argv[]) {
 
   printf("Available commands: \n");
   printf("s 'new_key' : changes the session key \n");
-  printf("i 'new_iv' : changes the IV \n");
-  printf("b : breaks the current VPN tunnel\n");
+  printf("i 'new_iv'  : changes the IV \n");
+  printf("b           : breaks the current VPN tunnel\n");
   while(1) {
     int ret;
     fd_set rd_set;
@@ -603,11 +603,19 @@ int main(int argc, char *argv[]) {
     if (FD_ISSET(STDIN, &rd_set)){
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
-        printf("USER INPUT: Read %d bytes\n", readn);
-        int i;
-        for (i = 0; i < readn; i++){
-          printf("%c", buf[i]);
-        }
+        if (buf[0] == 's') 
+          printf("Changing the session key\n");
+        else if (buf[0] == 'i')
+          printf("Changing the iv\n");
+        else if (buf[0] == 'b')
+          printf("Breaking the current VPN\n");
+        else 
+          printf("Unknown command");
+        //printf("USER INPUT: Read %d bytes\n", readn);
+        //int i;
+        //for (i = 0; i < readn; i++){
+        //  printf("%c", buf[i]);
+        //}
       }
     }
 
