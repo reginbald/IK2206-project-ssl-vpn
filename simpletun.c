@@ -596,7 +596,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (FD_ISSET(STDIN, &rd_set)){
-      nread = cread(tap_fd, buffer, BUFSIZE);
+      nread = read(tap_fd, buffer, BUFSIZE);
       do_debug("USER INPUT %d \n", nread);
     }
 
