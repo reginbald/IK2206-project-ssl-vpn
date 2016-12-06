@@ -572,12 +572,6 @@ int main(int argc, char *argv[]) {
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
 
-  //new_key used on user input
-  unsigned char *new_key = (unsigned char*)malloc(32);
-
-  // new_iv used on user input
-  unsigned char *new_iv = (unsigned char*)malloc(16);
-
   printf("Available commands: \n");
   printf("s : changes the session key \n");
   printf("i : changes the IV \n");
@@ -643,12 +637,12 @@ int main(int argc, char *argv[]) {
           // generate random key
           int i;
           for (i = 0; i < 32; i++) {
-            new_key[i] = (unsigned char) (rand() % 255 + 1);
+            key[i] = (unsigned char) (rand() % 255 + 1);
           }
-          print_hex(new_key, 32);
+          print_hex(key, 32);
           unsigned char *msg = (unsigned char*)malloc(33);
           msg[0] = 's';
-          memcpy(msg + 1, new_key, 256);
+          memcpy(msg + 1, key, 256);
           printf("Sending new session key to server\n"); // todo insure it arrives in order
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending session key\n");
@@ -664,13 +658,13 @@ int main(int argc, char *argv[]) {
           // generate random iv
           int i;
           for (i = 0; i < 16; i++) {
-            new_iv[i] = (unsigned char) (rand() % 255 + 1);
+            iv[i] = (unsigned char) (rand() % 255 + 1);
           }
-          print_hex(new_iv, 16);
+          print_hex(iv, 16);
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'i';
           for (i = 0; i < 16; i++){
-            msg[i + 1] = new_iv[i];
+            msg[i + 1] = iv[i];
           }
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
