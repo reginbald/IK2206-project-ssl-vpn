@@ -364,7 +364,10 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\nRandom number is: %s\n", number);
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s",session->master_key);
+    printf("MASTERKEY\n");
+    for (i = 0; i < session->master_key_length; i++) {
+        printf("%02X", session->master_key[i]);
+    }
 
     //// generate the random number for the challenge
     //srand((unsigned)time(NULL));
@@ -490,7 +493,10 @@ int main(int argc, char *argv[]) {
     BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s",session->master_key);
+    printf("MASTERKEY\n");
+    for (i = 0; i < session->master_key_length; i++) {
+        printf("%02X", session->master_key[i]);
+    }
   }
 
   /* initialize tun/tap interface */
