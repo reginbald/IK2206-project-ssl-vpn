@@ -590,7 +590,7 @@ int main(int argc, char *argv[]) {
     ret = select(maxfd + 1, &rd_set, NULL, NULL, &tv);
     cret = select(1, &console, NULL, NULL, &tv);
 
-    if (cret) {
+    if (cret)
       printf("INPUT\n");
 
     if (ret < 0 && errno == EINTR){
