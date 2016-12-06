@@ -656,7 +656,7 @@ int main(int argc, char *argv[]) {
             new_iv[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_iv, 16);
-          if (BIO_write(bio, new_iv, 16) <= 0) {
+          if (BIO_write(bio, new_iv, 32) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
@@ -666,7 +666,7 @@ int main(int argc, char *argv[]) {
         }
         else if (buf[0] == 'b') {
           printf("Breaking the current VPN\n");
-          if (BIO_write(bio, "b", 1) <= 0) {
+          if (BIO_write(bio, "b", 32) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
