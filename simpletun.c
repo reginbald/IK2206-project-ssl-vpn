@@ -378,6 +378,7 @@ int main(int argc, char *argv[]) {
     }
     printf("SUCCESS!\n");
 
+    BIO_flush(bio);
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
@@ -473,6 +474,8 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     printf("SUCCESS!\n");
+
+    BIO_flush(bio);
     
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
     // Get the random number from the server
@@ -484,8 +487,6 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\nRandom number is: %s\n", number);
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
-
-    BIO_flush(bio);
   }
 
   /* initialize tun/tap interface */
