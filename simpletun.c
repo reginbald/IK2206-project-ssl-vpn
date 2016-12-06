@@ -485,6 +485,7 @@ int main(int argc, char *argv[]) {
     int len = BIO_read(bio, tmpbuf, 10);
     strcpy(number, tmpbuf);
     printf("SUCCESS!\nRandom number is: %s\n", number);
+    BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
   }
