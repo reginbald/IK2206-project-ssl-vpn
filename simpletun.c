@@ -365,7 +365,7 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
-    for (i = 0; i < session->master_key_length; i++) {
+    for (size_t i = 0; i < session->master_key_length; i++) {
         printf("%02X", session->master_key[i]);
     }
 
@@ -494,7 +494,7 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
-    for (i = 0; i < session->master_key_length; i++) {
+    for (size_t i = 0; i < session->master_key_length; i++) {
         printf("%02X", session->master_key[i]);
     }
   }
