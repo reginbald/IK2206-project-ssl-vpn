@@ -615,7 +615,15 @@ int main(int argc, char *argv[]) {
     }
 
     if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
+      readn = read(STDIN, buf, sizeof(buf));
       printf("FROM ssl fd\n");
+      if (readn == 32){
+        print("New session key\n");
+      } else if (readn == 16){
+        printf("New IV\n");
+      } else {
+        printf("Break current VPN\n");
+      }
     }
 
     if (FD_ISSET(STDIN, &rd_set)){ // from console
