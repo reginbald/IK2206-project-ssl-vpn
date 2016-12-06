@@ -608,7 +608,7 @@ int main(int argc, char *argv[]) {
     if (FD_ISSET(STDIN, &rd_set)){
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
-        if (buf[0] == 's') 
+        if (buf[0] == 's') {
           printf("Changing the session key\n");
           int i;
           for (i = 0; i < 32 - 1; i++) {
@@ -617,18 +617,15 @@ int main(int argc, char *argv[]) {
           // send the random number to the client
           printf("new key\n");
           print_hex(new_key, 32);
-
-        else if (buf[0] == 'i')
+        }
+        else if (buf[0] == 'i') {
           printf("Changing the iv\n");
-        else if (buf[0] == 'b')
+        }
+        else if (buf[0] == 'b') {
           printf("Breaking the current VPN\n");
+        }
         else 
           printf("Unknown command\n");
-        //printf("USER INPUT: Read %d bytes\n", readn);
-        //int i;
-        //for (i = 0; i < readn; i++){
-        //  printf("%c", buf[i]);
-        //}
       }
     }
 
