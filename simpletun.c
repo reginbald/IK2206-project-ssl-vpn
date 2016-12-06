@@ -639,7 +639,7 @@ int main(int argc, char *argv[]) {
             new_key[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_key, 32);
-          unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
+          unsigned char *msg = (unsigned char*)malloc(33);
           msg[0] = 's';
           memcpy(msg + 1, new_key, 256);
           printf("Sending new session key to server\n"); // todo insure it arrives in order
@@ -662,6 +662,7 @@ int main(int argc, char *argv[]) {
           print_hex(new_iv, 16);
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'i';
+          memcpy(msg + 1, new_key, 128);
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
