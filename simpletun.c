@@ -186,6 +186,15 @@ void usage(void) {
   exit(1);
 }
 
+
+void print_hex(uint8_t *buf, size_t len) {
+    size_t i;
+    for (i = 0; i < len; i++) {
+        printf("%02x ", buf[i]);
+    }
+    printf("\n");
+}
+
 int main(int argc, char *argv[]) {
 
   int tap_fd, option;
@@ -364,7 +373,8 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\nRandom number is: %s\n", number);
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s\n", session.master_key);
+    printf("MASTERKEY:\n");
+    print_hex(session->master_key, session->master_key_length);
 
     //key = session->master_key;
     //iv =  session->master_key;
@@ -478,7 +488,8 @@ int main(int argc, char *argv[]) {
     BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s\n", session.master_key);
+    printf("MASTERKEY:\n");
+    print_hex(session->master_key, session->master_key_length);
   }
 
   /* initialize tun/tap interface */
