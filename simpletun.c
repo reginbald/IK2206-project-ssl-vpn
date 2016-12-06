@@ -362,9 +362,9 @@ int main(int argc, char *argv[]) {
     int len = BIO_read(bio, tmpbuf, 10);
     strcpy(number, tmpbuf);
     printf("SUCCESS!\nRandom number is: %s\n", number);
-    //SSL_SESSION *session =SSL_get_session(ssl);
+    SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s\n", ssl->session->master_key[ssl->session->master_key_length]);
+    printf("MASTERKEY: %s\n", session->master_key[session->master_key_length]);
 
     //// generate the random number for the challenge
     //srand((unsigned)time(NULL));
@@ -487,10 +487,10 @@ int main(int argc, char *argv[]) {
     //strcpy(number, tmpbuf);
     //printf("SUCCESS!\nRandom number is: %s\n", number);
     sleep(1); // sometimes the ssl pointer is not ready?
-    //BIO_get_ssl(bio, &ssl);
-    //SSL_SESSION *session =SSL_get_session(ssl);
+    BIO_get_ssl(bio, &ssl);
+    SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s\n", ssl->session->master_key[ssl->session->master_key_length]);
+    printf("MASTERKEY: %s\n", session->master_key[session->master_key_length]);
   }
 
   /* initialize tun/tap interface */
