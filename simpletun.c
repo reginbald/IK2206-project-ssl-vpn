@@ -231,6 +231,7 @@ int main(int argc, char *argv[]) {
   char number[10];
   char tmpbuf[11];
   static int ssl_session_ctx_id = 1;
+  size_t i;
 
   /* Check command line options */
   while ((option = getopt(argc, argv, "i:s:c:p:uahd")) > 0) {
@@ -365,7 +366,7 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
-    for (size_t i = 0; i < session->master_key_length; i++) {
+    for (i = 0; i < session->master_key_length; i++) {
         printf("%02X", session->master_key[i]);
     }
 
@@ -494,7 +495,7 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
-    for (size_t i = 0; i < session->master_key_length; i++) {
+    for (i = 0; i < session->master_key_length; i++) {
         printf("%02X", session->master_key[i]);
     }
   }
