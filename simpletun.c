@@ -582,7 +582,7 @@ int main(int argc, char *argv[]) {
     FD_SET(net_fd, &rd_set);
     FD_SET(STDIN, &rd_set); //stdin
 
-    maxfd = tap_fd > net_fd ? (tap_fd > STDIN ? tap_fd : STDIN) : (net_fd > STDIN ? net_fd : STDIN);
+    //maxfd = tap_fd > net_fd ? (tap_fd > STDIN ? tap_fd : STDIN) : (net_fd > STDIN ? net_fd : STDIN);
 
     ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
 
@@ -596,7 +596,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (FD_ISSET(STDIN, &rd_set)){
-      printf("input from user \n");
+      nread = cread(tap_fd, buffer, BUFSIZE);
+      do_debug("USER INPUT %d \n", nread);
     }
 
     if(FD_ISSET(tap_fd, &rd_set)){
