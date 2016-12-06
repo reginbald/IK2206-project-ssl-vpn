@@ -621,10 +621,15 @@ int main(int argc, char *argv[]) {
       //print_hex(session_change);
       if (session_change[0] == 's'){
         printf("New session key\n");
+        memcpy(key, *(session_changed + 1), 256);
+        print_hex(key, 32);
       } else if (session_change[0] == 'i'){
         printf("New IV\n");
+        memcpy(key, *(session_changed + 1), 128);
+        print_hex(iv, 16);
       } else if (session_change[0] == 'b'){
         printf("Break current VPN\n");
+        // TODO
       } else {
         printf("unkown message\n");
       }
