@@ -603,7 +603,7 @@ int main(int argc, char *argv[]) {
         printf("USER INPUT: Read %d bytes\n", readn);
         int i;
         for (i = 0; i < readn; i++){
-          printf("%s", buf[i]);
+          printf("%c", buf[i]);
         }
         printf("\n");
       }
