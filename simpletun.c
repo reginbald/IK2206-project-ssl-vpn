@@ -616,6 +616,17 @@ int main(int argc, char *argv[]) {
             new_key[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_key, 32);
+          printf("Sending new session key to server\n"); // todo insure it arrives in order
+          /* write packet */
+          nread = encrypt (new_key, nread, key, iv, temp);
+          unsigned char* t = generate_hmac(key, temp);
+          memcpy(temp+nread, t, 32);
+          nwrite = sendto(net_fd, temp, nread+32, 0, (struct sockaddr*) &remote, remotelen); 
+          if (nwrite < 0) {
+            perror("Sending data");
+            exit(1);
+          }
+          printf("New session key sent!\n")
         }
         else if (buf[0] == 'i') {
           printf("Changing the iv to:\n");
