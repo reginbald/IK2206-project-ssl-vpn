@@ -662,7 +662,7 @@ int main(int argc, char *argv[]) {
           print_hex(new_iv, 16);
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'i';
-          memcpy(msg + 1, new_key, 128);
+          memcpy(msg + 1, new_iv, 128);
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
