@@ -572,15 +572,26 @@ int main(int argc, char *argv[]) {
 
 
   while(1) {
-    int ret;
+    int ret, cret;
     fd_set rd_set;
+    fd_set console;
+    struct timeval tv;
 
     FD_ZERO(&rd_set);
     FD_SET(tap_fd, &rd_set); FD_SET(net_fd, &rd_set);
 
-    ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
+    FD_ZERO(&console);
+    FD_SET(0, &console);
 
-    printf("INPUT\n");
+    /* Wait up to five seconds. */
+    tv.tv_sec = 5;
+    tv.tv_usec = 0;
+
+    ret = select(maxfd + 1, &rd_set, NULL, NULL, &tv);
+    cret = select(1, &console, NULL, NULL, &tv);
+
+    if (cret) {
+      printf("INPUT\n");
 
     if (ret < 0 && errno == EINTR){
       continue;
