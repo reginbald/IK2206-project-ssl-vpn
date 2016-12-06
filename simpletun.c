@@ -672,7 +672,7 @@ int main(int argc, char *argv[]) {
             exit(1);
           }
           BIO_flush(bio);
-          printf("Break message sent\n")
+          printf("Break message sent\n");
         }
         else 
           printf("Unknown command\n");
