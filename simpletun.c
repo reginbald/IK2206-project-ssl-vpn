@@ -639,7 +639,7 @@ int main(int argc, char *argv[]) {
             new_key[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_key, 32);
-          unsigned char *msg = (unsigned char*)calloc(33, size_of(char));
+          unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 's';
           printf("Sending new session key to server\n"); // todo insure it arrives in order
           if (BIO_write(bio, new_key, 33) <= 0) {
@@ -659,7 +659,7 @@ int main(int argc, char *argv[]) {
             new_iv[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_iv, 16);
-          unsigned char *msg = (unsigned char*)calloc(33, size_of(char));
+          unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'i';
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
@@ -672,7 +672,7 @@ int main(int argc, char *argv[]) {
         }
         else if (buf[0] == 'b') {
           printf("Breaking the current VPN\n");
-          unsigned char *msg = (unsigned char*)calloc(33, size_of(char));
+          unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'b';
           if (BIO_write(bio, msg, 33) <= 0) {
             fprintf(stderr, "Error in sending iv\n");
