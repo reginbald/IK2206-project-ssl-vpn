@@ -587,8 +587,8 @@ int main(int argc, char *argv[]) {
     tv.tv_sec = 5;
     tv.tv_usec = 0;
 
-    ret = select(maxfd + 1, &rd_set, NULL, NULL, &tv);
-    cret = select(1, &console, NULL, NULL, &tv);
+    ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
+    cret = select(1, &console, NULL, NULL, NULL);
 
     if (cret)
       printf("INPUT\n");
