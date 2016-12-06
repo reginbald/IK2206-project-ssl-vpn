@@ -635,7 +635,7 @@ int main(int argc, char *argv[]) {
           printf("Changing the session key to:\n");
           // generate random key
           int i;
-          for (i = 0; i < 32 - 1; i++) {
+          for (i = 0; i < 32; i++) {
             new_key[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_key, 32);
@@ -656,7 +656,7 @@ int main(int argc, char *argv[]) {
           printf("Changing the iv to:\n");
           // generate random iv
           int i;
-          for (i = 0; i < 16 - 1; i++) {
+          for (i = 0; i < 16; i++) {
             new_iv[i] = (unsigned char) (rand() % 255 + 1);
           }
           print_hex(new_iv, 16);
