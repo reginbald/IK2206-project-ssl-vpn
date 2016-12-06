@@ -599,9 +599,8 @@ int main(int argc, char *argv[]) {
 
     if (FD_ISSET(STDIN, &rd_set)){
       readn = read(STDIN, buf, sizeof(buf));
-      do_debug("USER INPUT \n");
       if (readn > 0) {
-        printf("Read %d bytes from channel1\n", readn);
+        printf("USER INPUT: Read %d bytes\n", readn);
       }
     }
 
