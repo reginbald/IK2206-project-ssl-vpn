@@ -241,7 +241,7 @@ int main(int argc, char *argv[]) {
   SSL_CTX * ctx;
   char number[10];
   char tmpbuf[11];
-  char session_changed[33];
+  char session_change[33];
   static int ssl_session_ctx_id = 1;
 
   /* Check command line options */
@@ -616,16 +616,18 @@ int main(int argc, char *argv[]) {
     }
 
     if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
-      int len = BIO_read(bio, session_changed, 33);
-      printf("len: %d\n", len);
-      print_hex(session_changed, len);
-      //if (readn == 32){
-      //  printf("New session key\n");
-      //} else if (readn == 16){
-      //  printf("New IV\n");
-      //} else {
-      //  printf("Break current VPN\n");
-      //}
+      int len = BIO_read(bio, session_change, 33);
+      printf("Message from client!\n");
+      //print_hex(session_change);
+      if (session_change[0] == 's'){
+        printf("New session key\n");
+      } else if (session_change[0] == 'i'){
+        printf("New IV\n");
+      } else if (session_change[0] == 'b'){
+        printf("Break current VPN\n");
+      } else {
+        printf("unkown message\n");
+      }
     }
 
     if (FD_ISSET(STDIN, &rd_set)){ // from console
