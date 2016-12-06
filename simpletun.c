@@ -375,8 +375,8 @@ int main(int argc, char *argv[]) {
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
-    printf("copying ket:\n");
-    memcpy(key, &(session->master_key), 256);
+    printf("copying key:\n");
+    memcpy(key, (session->master_key), 256);
     print_hex(key, 32);
     printf("copying iv:\n");
     memcpy(iv, &(session->master_key[32]), 128);
@@ -493,8 +493,8 @@ int main(int argc, char *argv[]) {
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
-    printf("copying ket:\n");
-    memcpy(key, &(session->master_key), 256);
+    printf("copying key:\n");
+    memcpy(key, (session->master_key), 256);
     print_hex(key, 32);
     printf("copying iv:\n");
     memcpy(iv, &(session->master_key[32]), 128);
