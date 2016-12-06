@@ -616,7 +616,7 @@ int main(int argc, char *argv[]) {
 
     if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
       readn = read(STDIN, buf, sizeof(buf));
-      printf("FROM ssl fd\n");
+      printf("FROM ssl fd: %d bytes\n", readn);
       if (readn == 32){
         printf("New session key\n");
       } else if (readn == 16){
