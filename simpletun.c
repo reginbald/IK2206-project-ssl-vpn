@@ -571,6 +571,11 @@ int main(int argc, char *argv[]) {
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
 
+  //new_key used on user input
+  unsigned char *new_key = (unsigned char*)malloc(32);
+
+  // new_iv used on user input
+  unsigned char *new_iv = (unsigned char*)malloc(16);
 
   printf("Available commands: \n");
   printf("s 'new_key' : changes the session key \n");
@@ -605,6 +610,13 @@ int main(int argc, char *argv[]) {
       if (readn > 0) {
         if (buf[0] == 's') 
           printf("Changing the session key\n");
+          for (i = 0; i < 32 - 1; i++) {
+            new_key[i] = (unsigned char) (rand() % 255 + 1);
+          }
+          // send the random number to the client
+          printf("new key\n");
+          print_hex(new_key, 32);
+
         else if (buf[0] == 'i')
           printf("Changing the iv\n");
         else if (buf[0] == 'b')
