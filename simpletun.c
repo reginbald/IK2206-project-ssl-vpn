@@ -580,6 +580,8 @@ int main(int argc, char *argv[]) {
 
     ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
 
+    printf("INPUT\n");
+
     if (ret < 0 && errno == EINTR){
       continue;
     }
