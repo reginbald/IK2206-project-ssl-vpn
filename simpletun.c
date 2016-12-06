@@ -231,7 +231,6 @@ int main(int argc, char *argv[]) {
   char number[10];
   char tmpbuf[11];
   static int ssl_session_ctx_id = 1;
-  size_t i;
 
   /* Check command line options */
   while ((option = getopt(argc, argv, "i:s:c:p:uahd")) > 0) {
@@ -366,9 +365,9 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
-    for (i = 0; i < session->master_key_length; i++) {
-        printf("%02X", session->master_key[i]);
-    }
+    printf("%s\n", session->master_key_length);
+    printf("MASTERKEY\n");
+    printf("%s\n", ssl->session->master_key_length);
 
     //// generate the random number for the challenge
     //srand((unsigned)time(NULL));
@@ -495,9 +494,9 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
-    for (i = 0; i < session->master_key_length; i++) {
-        printf("%02X", session->master_key[i]);
-    }
+    printf("%s\n", session->master_key_length);
+    printf("MASTERKEY\n");
+    printf("%s\n", ssl->session->master_key_length);
   }
 
   /* initialize tun/tap interface */
