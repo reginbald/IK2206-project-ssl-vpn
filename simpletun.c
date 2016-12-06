@@ -365,6 +365,19 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
 
+    // generate the random number for the challenge
+    srand((unsigned)time(NULL));
+    sprintf(number, "%d", rand());
+
+    // send the random number to the client
+    printf("Sending the random number challenge to the server. Number is %s... \n", number);
+    if (BIO_write(bio, number, strlen(number)) <= 0) {
+      fprintf(stderr, "Error in sending random number\n");
+      ERR_print_errors_fp(stderr);
+      exit(1);
+    }
+    printf("SUCCESS!\n");
+
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
@@ -399,16 +412,12 @@ int main(int argc, char *argv[]) {
       ERR_print_errors_fp(stderr);
         exit(6);
     }
-    
-    /* Don't want any retries */
-    SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
 
     /* Create the buffering BIO */
-
-    //bbio = BIO_new(BIO_f_buffer());
+    bbio = BIO_new(BIO_f_buffer());
 
     /* Add to chain */
-    //bio = BIO_push(bbio, bio);
+    bio = BIO_push(bbio, bio);
 
     acpt = BIO_new_accept("4433");
     /* By doing this when a new connection is established
@@ -452,7 +461,7 @@ int main(int argc, char *argv[]) {
       return (0);
     }
     printf("SUCCESS!\n");
-// generate the random number for the challenge
+    // generate the random number for the challenge
     srand((unsigned)time(NULL));
     sprintf(number, "%d", rand());
 
@@ -466,9 +475,14 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\n");
     
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
-    SSL_SESSION *session = SSL_get_session(ssl);
-    if (session == NULL)
-      printf("SESSION IS NULL!\n");
+    // Get the random number from the server
+    printf("Waiting for random number from client... \n");
+    memset(tmpbuf, '\0', 11);
+    memset(number, '\0', 11);
+    int len = BIO_read(bio, tmpbuf, 10);
+    strcpy(number, tmpbuf);
+    printf("SUCCESS!\nRandom number is: %s\n", number);
+    SSL_SESSION *session =SSL_get_session(ssl);
     SSL_SESSION_print(out, session);
 
     BIO_flush(bio);
