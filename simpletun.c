@@ -58,6 +58,8 @@
 #define ETH_HDR_LEN 14
 #define ARP_PKT_LEN 28
 
+#define STDIN 0
+
 int debug;
 char *progname;
 
@@ -572,26 +574,17 @@ int main(int argc, char *argv[]) {
 
 
   while(1) {
-    int ret, cret;
+    int ret;
     fd_set rd_set;
-    fd_set console;
-    struct timeval tv;
 
     FD_ZERO(&rd_set);
-    FD_SET(tap_fd, &rd_set); FD_SET(net_fd, &rd_set);
+    FD_SET(tap_fd, &rd_set); 
+    FD_SET(net_fd, &rd_set);
+    FD_SET(STDIN, &rd_set); //stdin
 
-    FD_ZERO(&console);
-    FD_SET(0, &console);
-
-    /* Wait up to five seconds. */
-    tv.tv_sec = 5;
-    tv.tv_usec = 0;
+    maxfd = tap_fd > net_fd ? (tap_fd > STDIN ? tap_fd : STDIN) : (net_fd > STDIN ? net_fd : STDIN);
 
     ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
-    cret = select(1, &console, NULL, NULL, NULL);
-
-    if (cret)
-      printf("INPUT\n");
 
     if (ret < 0 && errno == EINTR){
       continue;
@@ -600,6 +593,10 @@ int main(int argc, char *argv[]) {
     if (ret < 0) {
       perror("select()");
       exit(1);
+    }
+
+    if (FD_ISSET(STDIN, &fds)){
+      printf("input from user \n");
     }
 
     if(FD_ISSET(tap_fd, &rd_set)){
