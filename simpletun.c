@@ -364,22 +364,10 @@ int main(int argc, char *argv[]) {
     printf("SUCCESS!\nRandom number is: %s\n", number);
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s\n", session->master_key);
+    printf("MASTERKEY: %s\n", session.master_key);
 
-    //// generate the random number for the challenge
-    //srand((unsigned)time(NULL));
-    //sprintf(number, "%d", rand());
-//
-    //// send the random number to the client
-    //printf("Sending the random number challenge to the server. Number is %s... \n", number);
-    //if (BIO_write(bio, number, strlen(number)) <= 0) {
-    //  fprintf(stderr, "Error in sending random number\n");
-    //  ERR_print_errors_fp(stderr);
-    //  exit(1);
-    //}
-    //printf("SUCCESS!\n");
-//
-    //BIO_flush(bio);
+    //key = session->master_key;
+    //iv =  session->master_key;
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
@@ -490,7 +478,7 @@ int main(int argc, char *argv[]) {
     BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY: %s\n", session->master_key);
+    printf("MASTERKEY: %s\n", session.master_key);
   }
 
   /* initialize tun/tap interface */
