@@ -241,7 +241,7 @@ int main(int argc, char *argv[]) {
   SSL_CTX * ctx;
   char number[10];
   char tmpbuf[11];
-  char session_change[32];
+  char session_changed[32];
   static int ssl_session_ctx_id = 1;
 
   /* Check command line options */
