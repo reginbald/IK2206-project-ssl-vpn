@@ -610,6 +610,7 @@ int main(int argc, char *argv[]) {
       if (readn > 0) {
         if (buf[0] == 's') 
           printf("Changing the session key\n");
+          int i;
           for (i = 0; i < 32 - 1; i++) {
             new_key[i] = (unsigned char) (rand() % 255 + 1);
           }
