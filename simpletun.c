@@ -625,7 +625,7 @@ int main(int argc, char *argv[]) {
         print_hex(key, 32);
       } else if (session_change[0] == 'i'){
         printf("New IV\n");
-        memcpy(key, &(session_change[1]), 128);
+        memcpy(iv, &(session_change[1]), 128);
         print_hex(iv, 16);
       } else if (session_change[0] == 'b'){
         printf("Break current VPN\n");
