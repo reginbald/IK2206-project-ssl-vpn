@@ -363,7 +363,7 @@ int main(int argc, char *argv[]) {
     strcpy(number, tmpbuf);
     printf("SUCCESS!\nRandom number is: %s\n", number);
     SSL_SESSION *session =SSL_get_session(ssl);
-    SSL_SESSION_print(out, session);
+    //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
     for (i = 0; i < session->master_key_length; i++) {
         printf("%02X", session->master_key[i]);
@@ -492,7 +492,7 @@ int main(int argc, char *argv[]) {
     sleep(1); // sometimes the ssl pointer is not ready?
     BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
-    SSL_SESSION_print(out, session);
+    //SSL_SESSION_print(out, session);
     printf("MASTERKEY\n");
     for (i = 0; i < session->master_key_length; i++) {
         printf("%02X", session->master_key[i]);
