@@ -514,7 +514,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  if (cliserv == CLIENT) {
+  if(cliserv==CLIENT){
     /* Client, try to connect to server */
 
     /* assign the destination address */
@@ -524,7 +524,7 @@ int main(int argc, char *argv[]) {
     local.sin_port = htons(port);
 
     /* bind request */
-    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0) {
+    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0){
       perror("bind()");
       exit(1);
     }
@@ -537,25 +537,25 @@ int main(int argc, char *argv[]) {
 
     net_fd = sock_fd;
     do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
-
+    
   } else {
     /* Server, wait for connections */
 
     /* avoid EADDRINUSE error on bind() */
-    if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval)) < 0) {
+    if(setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval)) < 0){
       perror("setsockopt()");
       exit(1);
     }
-
+    
     memset(&local, 0, sizeof(local));
     local.sin_family = AF_INET;
     local.sin_addr.s_addr = htonl(INADDR_ANY);
     local.sin_port = htons(port);
-    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0) {
+    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0){
       perror("bind()");
       exit(1);
     }
-
+    
     net_fd = sock_fd;
     memset(&remote, 0, sizeof(remote));
     remote.sin_family = AF_INET;
@@ -565,8 +565,13 @@ int main(int argc, char *argv[]) {
 
     do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
   }
+  
+  /* use select() to handle two descriptors at once */
+  maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
 
-  while (1) {
+
+
+  while(1) {
     int ret;
     fd_set rd_set;
 
@@ -575,7 +580,7 @@ int main(int argc, char *argv[]) {
 
     ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
 
-    if (ret < 0 && errno == EINTR) {
+    if (ret < 0 && errno == EINTR){
       continue;
     }
 
@@ -584,9 +589,9 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
-    if (FD_ISSET(tap_fd, &rd_set)) {
+    if(FD_ISSET(tap_fd, &rd_set)){
       /* data from tun/tap: just read it and write it to the network */
-
+      
       nread = cread(tap_fd, buffer, BUFSIZE);
 
       tap2net++;
@@ -595,8 +600,8 @@ int main(int argc, char *argv[]) {
       /* write packet */
       nread = encrypt (buffer, nread, key, iv, temp);
       unsigned char* t = generate_hmac(key, temp);
-      memcpy(temp + nread, t, 32);
-      nwrite = sendto(net_fd, temp, nread + 32, 0, (struct sockaddr*) &remote, remotelen);
+      memcpy(temp+nread, t, 32);
+      nwrite = sendto(net_fd, temp, nread+32, 0, (struct sockaddr*) &remote, remotelen); 
       if (nwrite < 0) {
         perror("Sending data");
         exit(1);
@@ -605,8 +610,8 @@ int main(int argc, char *argv[]) {
       do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite);
     }
 
-    if (FD_ISSET(net_fd, &rd_set)) {
-      /* data from the network: read it, and write it to the tun/tap interface.
+    if(FD_ISSET(net_fd, &rd_set)){
+      /* data from the network: read it, and write it to the tun/tap interface. 
        * We need to read the length first, and then the packet */
 
       net2tap++;
@@ -619,13 +624,13 @@ int main(int argc, char *argv[]) {
       }
 
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
-      memcpy(temp, buffer, nread - 32);
-      if (compare_hmac(key, temp, buffer + nread)) {
-        perror("Wrong");
-        exit(1);
+      memcpy(temp, buffer, nread-32);
+      if (compare_hmac(key, temp, buffer+nread)){
+          perror("Wrong");
+          exit(1);
       }
-      nread = decrypt(temp, nread - 32, key, iv, buffer);
-      /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */
+      nread = decrypt(temp, nread-32, key, iv, buffer);
+      /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
       nwrite = cwrite(tap_fd, buffer, nread);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
