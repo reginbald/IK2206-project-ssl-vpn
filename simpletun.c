@@ -610,7 +610,7 @@ int main(int argc, char *argv[]) {
         else if (buf[0] == 'b')
           printf("Breaking the current VPN\n");
         else 
-          printf("Unknown command");
+          printf("Unknown command\n");
         //printf("USER INPUT: Read %d bytes\n", readn);
         //int i;
         //for (i = 0; i < readn; i++){
