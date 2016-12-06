@@ -572,7 +572,10 @@ int main(int argc, char *argv[]) {
   maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
 
 
-
+  printf("Available commands: \n");
+  printf("s 'new_key' : changes the session key \n");
+  printf("i 'new_iv' : changes the IV \n");
+  printf("b : breaks the current VPN tunnel\n");
   while(1) {
     int ret;
     fd_set rd_set;
@@ -605,7 +608,6 @@ int main(int argc, char *argv[]) {
         for (i = 0; i < readn; i++){
           printf("%c", buf[i]);
         }
-        printf("\n");
       }
     }
 
