@@ -755,15 +755,16 @@ int main(int argc, char *argv[]) {
     }
     switch(r){
       case 1: 
-        continue;
+        goto done;
       default: 
         perror("shutdown failed\n");
         exit(1);
     }
 
-  /* Close the connection and free the context */
-  BIO_free_all(bio);
-  SSL_CTX_free(ctx);
+  done:
+    /* Close the connection and free the context */
+    BIO_free_all(bio);
+    SSL_CTX_free(ctx);
 
   return (0);
 }
