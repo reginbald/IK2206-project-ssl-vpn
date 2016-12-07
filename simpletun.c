@@ -190,24 +190,23 @@ void usage(void) {
 
 
 void print_hex(uint8_t *buf, size_t len) {
-    size_t i;
-    for (i = 0; i < len; i++) {
-        do_debug("%02x ", buf[i]);
-    }
-    do_debug("\n");
+  size_t i;
+  for (i = 0; i < len; i++) {
+    do_debug("%02x ", buf[i]);
+  }
+  do_debug("\n");
 }
 
 int main(int argc, char *argv[]) {
 
+  /* Socket Variables */
   int tap_fd, option;
   int flags = IFF_TUN;
   char if_name[IFNAMSIZ] = "";
   int header_len = IP_HDR_LEN;
   int maxfd;
   uint16_t nread, nwrite, plength;
-//  uint16_t total_len, ethertype;
   char buffer[BUFSIZE], temp[BUFSIZE];
-
   struct sockaddr_in local, remote;
   char remote_ip[16] = "";
   unsigned short int port = PORT;
@@ -218,10 +217,7 @@ int main(int argc, char *argv[]) {
 
   progname = argv[0];
 
-  /* use select() to handle two descriptors at once */
-  maxfd = (tap_fd > net_fd) ? tap_fd : net_fd;
-
-  //Init of encryption
+  /* A 256 bit key */
   unsigned char *key = (unsigned char*)malloc(32);
 
   /* A 128 bit IV */
@@ -236,6 +232,7 @@ int main(int argc, char *argv[]) {
   SSLeay_add_ssl_algorithms();
   OPENSSL_config(NULL);
 
+  /* Encryption Variables */
   BIO * bio, *bbio, *acpt, *out;
   SSL * ssl;
   SSL_CTX * ctx;
@@ -244,7 +241,7 @@ int main(int argc, char *argv[]) {
   char session_change[33];
   static int ssl_session_ctx_id = 1;
 
-  /* Check command line options */
+  /* Command line options */
   while ((option = getopt(argc, argv, "i:s:c:p:uahd")) > 0) {
     switch (option) {
     case 'd':
@@ -299,52 +296,51 @@ int main(int argc, char *argv[]) {
     usage();
   }
 
-  /* SSL context setup */
+  /* SSL code */
   if (cliserv == CLIENT) {
     ctx = SSL_CTX_new(SSLv23_client_method());
     if (!ctx) {
-        ERR_print_errors_fp(stderr);
-        exit(1);
+      ERR_print_errors_fp(stderr);
+      exit(1);
     }
-    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/client.crt", SSL_FILETYPE_PEM) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(2);
+    if (SSL_CTX_use_certificate_file(ctx, "/home/seed/ik2206-ssl-vpn/client.crt", SSL_FILETYPE_PEM) <= 0) {
+      ERR_print_errors_fp(stderr);
+      exit(2);
     }
     if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/client.key", SSL_FILETYPE_PEM) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(3);
+      ERR_print_errors_fp(stderr);
+      exit(3);
     }
     if (SSL_CTX_check_private_key(ctx) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(4);
+      ERR_print_errors_fp(stderr);
+      exit(4);
     }
     if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(5);
+      ERR_print_errors_fp(stderr);
+      exit(5);
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
     bio = BIO_new_ssl_connect(ctx);
-    
+
     BIO_get_ssl(bio, &ssl);
 
     if (!ssl) {
       ERR_print_errors_fp(stderr);
-        exit(6);
+      exit(6);
     }
 
     /* Don't want any retries */
     SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
-    /* We might want to do other things with ssl here */
 
-    // set connection parameters
+    /* set connection parameters */
     BIO_set_conn_hostname(bio, remote_ip);
     BIO_set_conn_port(bio, "4433");
 
-    // create a buffer to print to the screen
+    /* create a buffer to print to the screen */
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
-    // establish a connection to the server
+    /* establish a connection to the server */
     do_debug("Attempting to to connect to the server... ");
     if (BIO_do_connect(bio) <= 0) {
       do_debug("Error connecting to server\n");
@@ -356,7 +352,7 @@ int main(int argc, char *argv[]) {
     }
     do_debug("SUCCESS!\n");
 
-    // initiate the handshake with the server
+    /* initiate the handshake with the server */
     do_debug("Initiating SSL handshake with the server... \n");
     if (BIO_do_handshake(bio) <= 0) {
       do_debug("Error establishing SSL connection\n");
@@ -367,15 +363,9 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
     do_debug("SUCCESS!\n");
-    // Get the random number from the server
-    do_debug("Waiting for random number from server... \n");
-    memset(tmpbuf, '\0', 11);
-    memset(number, '\0', 11);
-    int len = BIO_read(bio, tmpbuf, 10);
-    strcpy(number, tmpbuf);
-    do_debug("SUCCESS!\nRandom number is: %s\n", number);
-    SSL_SESSION *session =SSL_get_session(ssl);
-    //SSL_SESSION_print(out, session);
+
+    /* We retrieve the master key from the session */
+    SSL_SESSION *session = SSL_get_session(ssl);
     do_debug("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
     do_debug("copying key:\n");
@@ -388,24 +378,24 @@ int main(int argc, char *argv[]) {
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
     if (!ctx) {
-        ERR_print_errors_fp(stderr);
-        exit(1);
+      ERR_print_errors_fp(stderr);
+      exit(1);
     }
-    if (SSL_CTX_use_certificate_file(ctx,"/home/seed/ik2206-ssl-vpn/server.crt", SSL_FILETYPE_PEM) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(2);
+    if (SSL_CTX_use_certificate_file(ctx, "/home/seed/ik2206-ssl-vpn/server.crt", SSL_FILETYPE_PEM) <= 0) {
+      ERR_print_errors_fp(stderr);
+      exit(2);
     }
     if (SSL_CTX_use_PrivateKey_file(ctx, "/home/seed/ik2206-ssl-vpn/server.key", SSL_FILETYPE_PEM) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(3);
+      ERR_print_errors_fp(stderr);
+      exit(3);
     }
     if (SSL_CTX_check_private_key(ctx) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(4);
+      ERR_print_errors_fp(stderr);
+      exit(4);
     }
     if (SSL_CTX_load_verify_locations(ctx, "/home/seed/ik2206-ssl-vpn/ca.crt", NULL) <= 0) {
-        ERR_print_errors_fp(stderr);
-        exit(5);
+      ERR_print_errors_fp(stderr);
+      exit(5);
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
 
@@ -416,7 +406,7 @@ int main(int argc, char *argv[]) {
 
     if (!ssl) {
       ERR_print_errors_fp(stderr);
-        exit(6);
+      exit(6);
     }
 
     /* Create the buffering BIO */
@@ -426,11 +416,6 @@ int main(int argc, char *argv[]) {
     bio = BIO_push(bbio, bio);
 
     acpt = BIO_new_accept("4433");
-    /* By doing this when a new connection is established
-     * we automatically have bio inserted into it. The
-     * BIO chain is now 'swallowed' by the accept BIO and
-     * will be freed when the accept BIO is freed.
-     */
     BIO_set_accept_bios(acpt, bio);
 
     /* Setup accept BIO */
@@ -459,7 +444,7 @@ int main(int argc, char *argv[]) {
 
     BIO_free_all(acpt);
 
-    // wait for ssl handshake from the client
+    /* wait for ssl handshake from the client */
     do_debug("Waiting for SSL handshake...\n");
     if (BIO_do_handshake(bio) <= 0) {
       do_debug("Error in SSL handshake\n");
@@ -469,12 +454,12 @@ int main(int argc, char *argv[]) {
     do_debug("SUCCESS!\n");
     srand((unsigned)time(NULL));
     BIO_flush(bio);
-    
+
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
     sleep(1); // sometimes the ssl pointer is not ready?
     BIO_get_ssl(bio, &ssl);
-    SSL_SESSION *session =SSL_get_session(ssl);
-    //SSL_SESSION_print(out, session);
+    SSL_SESSION *session = SSL_get_session(ssl);
+
     do_debug("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
     do_debug("copying key:\n");
@@ -498,7 +483,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  if(cliserv==CLIENT){
+  if (cliserv == CLIENT) {
     /* Client, try to connect to server */
 
     /* assign the destination address */
@@ -508,7 +493,7 @@ int main(int argc, char *argv[]) {
     local.sin_port = htons(port);
 
     /* bind request */
-    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0){
+    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0) {
       perror("bind()");
       exit(1);
     }
@@ -521,25 +506,23 @@ int main(int argc, char *argv[]) {
 
     net_fd = sock_fd;
     do_debug("CLIENT: Connected to server %s\n", inet_ntoa(remote.sin_addr));
-    
+
   } else {
     /* Server, wait for connections */
-
-    /* avoid EADDRINUSE error on bind() */
-    if(setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval)) < 0){
+    if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&optval, sizeof(optval)) < 0) {
       perror("setsockopt()");
       exit(1);
     }
-    
+
     memset(&local, 0, sizeof(local));
     local.sin_family = AF_INET;
     local.sin_addr.s_addr = htonl(INADDR_ANY);
     local.sin_port = htons(port);
-    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0){
+    if (bind(sock_fd, (struct sockaddr*) &local, sizeof(local)) < 0) {
       perror("bind()");
       exit(1);
     }
-    
+
     net_fd = sock_fd;
     memset(&remote, 0, sizeof(remote));
     remote.sin_family = AF_INET;
@@ -549,16 +532,16 @@ int main(int argc, char *argv[]) {
 
     do_debug("SERVER: Client connected from %s\n", inet_ntoa(remote.sin_addr));
   }
-  
+
   /* use select() to handle two descriptors at once */
-  maxfd = (tap_fd > net_fd)?tap_fd:net_fd;
+  maxfd = (tap_fd > net_fd) ? tap_fd : net_fd;
 
   printf("Available commands: \n");
   printf("s : changes the session key \n");
   printf("i : changes the IV \n");
   printf("b : breaks the current VPN tunnel\n");
   int r = 0;
-  while(1) {
+  while (1) {
     int ret;
     fd_set rd_set;
     int ssl_fd;
@@ -566,13 +549,13 @@ int main(int argc, char *argv[]) {
     int readn;
 
     ssl_fd = SSL_get_fd(ssl);
-    if (ssl_fd < 0){
+    if (ssl_fd < 0) {
       perror("ssl fd");
       exit(1);
     }
 
     FD_ZERO(&rd_set);
-    FD_SET(tap_fd, &rd_set); 
+    FD_SET(tap_fd, &rd_set);
     FD_SET(net_fd, &rd_set);
     FD_SET(STDIN, &rd_set); //stdin
     FD_SET(ssl_fd, &rd_set); //ssl
@@ -582,7 +565,7 @@ int main(int argc, char *argv[]) {
 
     ret = select(maxfd + 1, &rd_set, NULL, NULL, NULL);
 
-    if (ret < 0 && errno == EINTR){
+    if (ret < 0 && errno == EINTR) {
       continue;
     }
 
@@ -591,19 +574,18 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
-    if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
+    if (FD_ISSET(ssl_fd, &rd_set)) { // from ssl
       int len = BIO_read(bio, session_change, 33);
       do_debug("Message from client!\n");
-      //print_hex(session_change);
-      if (session_change[0] == 's'){
+      if (session_change[0] == 's') {
         do_debug("New session key\n");
         memcpy(key, &(session_change[1]), 32);
         print_hex(key, 32);
-      } else if (session_change[0] == 'i'){
+      } else if (session_change[0] == 'i') {
         do_debug("New IV\n");
         memcpy(iv, &(session_change[1]), 16);
         print_hex(iv, 16);
-      } else if (session_change[0] == 'b'){
+      } else if (session_change[0] == 'b') {
         do_debug("Break current VPN\n");
         goto shutdown;
       } else {
@@ -611,7 +593,7 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    if (FD_ISSET(STDIN, &rd_set)){ // from console
+    if (FD_ISSET(STDIN, &rd_set)) { // from console
       if (cliserv != CLIENT) continue;
       if (r) continue;
       readn = read(STDIN, buf, sizeof(buf));
@@ -621,15 +603,15 @@ int main(int argc, char *argv[]) {
           // generate random key
           int i;
           for (i = 0; i < 32; i++) {
-            key[i] = (unsigned char) (rand() % 255 + 1);
+            key[i] = (unsigned char) (rand() % 256);
           }
           print_hex(key, 32);
           unsigned char *msg = (unsigned char*)malloc(33);
           msg[0] = 's';
-          for (i = 0; i < 32; i++){
+          for (i = 0; i < 32; i++) {
             msg[i + 1] = key[i];
           }
-          do_debug("Sending new session key to server\n"); // todo insure it arrives in order
+          do_debug("Sending new session key to server\n");
           if (BIO_write(bio, msg, 33) <= 0) {
             do_debug("Error in sending session key\n");
             ERR_print_errors_fp(stderr);
@@ -644,12 +626,12 @@ int main(int argc, char *argv[]) {
           // generate random iv
           int i;
           for (i = 0; i < 16; i++) {
-            iv[i] = (unsigned char) (rand() % 255 + 1);
+            iv[i] = (unsigned char) (rand() % 256);
           }
           print_hex(iv, 16);
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'i';
-          for (i = 0; i < 16; i++){
+          for (i = 0; i < 16; i++) {
             msg[i + 1] = iv[i];
           }
           if (BIO_write(bio, msg, 33) <= 0) {
@@ -676,14 +658,14 @@ int main(int argc, char *argv[]) {
           do_debug("Break message sent\n");
           goto shutdown;
         }
-        else 
+        else
           do_debug("Unknown command\n");
       }
     }
 
-    if(FD_ISSET(tap_fd, &rd_set)){
+    if (FD_ISSET(tap_fd, &rd_set)) {
       /* data from tun/tap: just read it and write it to the network */
-      
+
       nread = cread(tap_fd, buffer, BUFSIZE);
 
       tap2net++;
@@ -692,8 +674,8 @@ int main(int argc, char *argv[]) {
       /* write packet */
       nread = encrypt (buffer, nread, key, iv, temp);
       unsigned char* t = generate_hmac(key, temp);
-      memcpy(temp+nread, t, 32);
-      nwrite = sendto(net_fd, temp, nread+32, 0, (struct sockaddr*) &remote, remotelen); 
+      memcpy(temp + nread, t, 32);
+      nwrite = sendto(net_fd, temp, nread + 32, 0, (struct sockaddr*) &remote, remotelen);
       if (nwrite < 0) {
         perror("Sending data");
         exit(1);
@@ -702,8 +684,8 @@ int main(int argc, char *argv[]) {
       do_debug("TAP2NET %lu: Written %d bytes to the network\n", tap2net, nwrite);
     }
 
-    if(FD_ISSET(net_fd, &rd_set)){
-      /* data from the network: read it, and write it to the tun/tap interface. 
+    if (FD_ISSET(net_fd, &rd_set)) {
+      /* data from the network: read it, and write it to the tun/tap interface.
        * We need to read the length first, and then the packet */
 
       net2tap++;
@@ -716,39 +698,40 @@ int main(int argc, char *argv[]) {
       }
 
       do_debug("NET2TAP %lu: Read %d bytes from the network\n", net2tap, nread);
-      memcpy(temp, buffer, nread-32);
-      if (compare_hmac(key, temp, buffer+nread)){
-          perror("Wrong");
-          exit(1);
+      memcpy(temp, buffer, nread - 32);
+      if (compare_hmac(key, temp, buffer + nread)) {
+        perror("Wrong");
+        exit(1);
       }
-      nread = decrypt(temp, nread-32, key, iv, buffer);
+      nread = decrypt(temp, nread - 32, key, iv, buffer);
 
-      /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */ 
+      /* now buffer[] contains a full packet or frame, write it into the tun/tap interface */
       nwrite = cwrite(tap_fd, buffer, nread);
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
   }
 
-  shutdown: 
+shutdown:
+  /* Shutdown of the SSL connection*/
+  r = SSL_shutdown(ssl);
+  if (!r) {
     r = SSL_shutdown(ssl);
-    if (!r){
-      r = SSL_shutdown(ssl);
-    }
-    switch(r){
-      case 1: 
-        goto done;
-      default: 
-        perror("shutdown failed\n");
-        exit(1);
-    }
+  }
+  switch (r) {
+  case 1:
+    goto done;
+  default:
+    perror("shutdown failed\n");
+    exit(1);
+  }
 
-  done:
-    /* Close the connection and free the context */
-    BIO_free_all(bio);
-    SSL_CTX_free(ctx);
+done:
+  /* Close the connection and free the context */
+  BIO_free_all(bio);
+  SSL_CTX_free(ctx);
 
-    close(net_fd);
-    close(tap_fd);
+  close(net_fd);
+  close(tap_fd);
 
   return (0);
 }
