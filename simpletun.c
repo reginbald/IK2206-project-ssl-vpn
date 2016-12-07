@@ -624,17 +624,7 @@ int main(int argc, char *argv[]) {
         print_hex(iv, 16);
       } else if (session_change[0] == 'b'){
         printf("Break current VPN\n");
-        r = SSL_shutdown(ssl);
-        if (!r){
-          r = SSL_shutdown(ssl);
-        }
-        switch(r){
-          case 1: 
-            continue;
-          default: 
-            perror("shutdown failed\n");
-            exit(1);
-        }
+        goto shutdown;
       } else {
         printf("unkown message\n");
       }
@@ -703,6 +693,7 @@ int main(int argc, char *argv[]) {
           BIO_flush(bio);
           free(msg);
           printf("Break message sent\n");
+          goto shutdown;
         }
         else 
           printf("Unknown command\n");
@@ -756,6 +747,19 @@ int main(int argc, char *argv[]) {
       do_debug("NET2TAP %lu: Written %d bytes to the tap interface\n", net2tap, nwrite);
     }
   }
+
+  shutdown: 
+    r = SSL_shutdown(ssl);
+    if (!r){
+      r = SSL_shutdown(ssl);
+    }
+    switch(r){
+      case 1: 
+        continue;
+      default: 
+        perror("shutdown failed\n");
+        exit(1);
+    }
 
   /* Close the connection and free the context */
   BIO_free_all(bio);
