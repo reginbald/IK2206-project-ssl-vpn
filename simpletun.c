@@ -766,5 +766,8 @@ int main(int argc, char *argv[]) {
     BIO_free_all(bio);
     SSL_CTX_free(ctx);
 
+    close(net_fd);
+    close(tap_fd);
+
   return (0);
 }
