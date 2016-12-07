@@ -576,6 +576,7 @@ int main(int argc, char *argv[]) {
   printf("s : changes the session key \n");
   printf("i : changes the IV \n");
   printf("b : breaks the current VPN tunnel\n");
+  int r = 0;
   while(1) {
     int ret;
     fd_set rd_set;
@@ -623,13 +624,25 @@ int main(int argc, char *argv[]) {
         print_hex(iv, 16);
       } else if (session_change[0] == 'b'){
         printf("Break current VPN\n");
-        break;
+        r = SSL_shutdown(ssl);
+        if (!r){
+          r = SSL_shutdown(ssl);
+        }
+        switch(r){
+          case 1: 
+            continue;
+          default: 
+            perror("shutdown failed\n");
+            exit(1);
+        }
       } else {
         printf("unkown message\n");
       }
     }
 
     if (FD_ISSET(STDIN, &rd_set)){ // from console
+      if (cliserv != CLIENT) continue;
+      if (r) continue;
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
         if (buf[0] == 's') {
@@ -678,6 +691,7 @@ int main(int argc, char *argv[]) {
           printf("New iv sent!\n");
         }
         else if (buf[0] == 'b') {
+          r = 1;
           printf("Breaking the current VPN\n");
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'b';
@@ -746,9 +760,6 @@ int main(int argc, char *argv[]) {
   /* Close the connection and free the context */
   BIO_free_all(bio);
   SSL_CTX_free(ctx);
-
-  close(net_fd);
-  close(tap_fd);
 
   return (0);
 }
