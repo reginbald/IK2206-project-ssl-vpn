@@ -39,12 +39,10 @@
 #include <stdarg.h>
 #include "AES.h"
 #include "HMAC.h"
-#include "common.h"
-#include "server.h"
-#include "client.h"
 #include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+#include <openssl/ssl.h>
 
 
 /* buffer for reading from tun/tap interface, must be >= 1500 */
