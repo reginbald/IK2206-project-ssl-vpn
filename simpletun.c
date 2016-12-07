@@ -192,9 +192,9 @@ void usage(void) {
 void print_hex(uint8_t *buf, size_t len) {
     size_t i;
     for (i = 0; i < len; i++) {
-        printf("%02x ", buf[i]);
+        do_debug("%02x ", buf[i]);
     }
-    printf("\n");
+    do_debug("\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -345,43 +345,43 @@ int main(int argc, char *argv[]) {
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
 
     // establish a connection to the server
-    //printf("Attempting to to connect to the server... ");
+    do_debug("Attempting to to connect to the server... ");
     if (BIO_do_connect(bio) <= 0) {
-      fprintf(stderr, "Error connecting to server\n");
+      do_debug(stderr, "Error connecting to server\n");
       ERR_print_errors_fp(stderr);
       BIO_free_all(bio);
       BIO_free(out);
       SSL_CTX_free(ctx);
       exit(1);
     }
-    printf("SUCCESS!\n");
+    do_debug("SUCCESS!\n");
 
     // initiate the handshake with the server
-    printf("Initiating SSL handshake with the server... \n");
+    do_debug("Initiating SSL handshake with the server... \n");
     if (BIO_do_handshake(bio) <= 0) {
-      fprintf(stderr, "Error establishing SSL connection\n");
+      do_debug(stderr, "Error establishing SSL connection\n");
       ERR_print_errors_fp(stderr);
       BIO_free_all(bio);
       BIO_free(out);
       SSL_CTX_free(ctx);
       exit(1);
     }
-    printf("SUCCESS!\n");
+    do_debug("SUCCESS!\n");
     // Get the random number from the server
-    printf("Waiting for random number from server... \n");
+    do_debug("Waiting for random number from server... \n");
     memset(tmpbuf, '\0', 11);
     memset(number, '\0', 11);
     int len = BIO_read(bio, tmpbuf, 10);
     strcpy(number, tmpbuf);
-    printf("SUCCESS!\nRandom number is: %s\n", number);
+    do_debug("SUCCESS!\nRandom number is: %s\n", number);
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY:\n");
+    do_debug("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
-    printf("copying key:\n");
+    do_debug("copying key:\n");
     memcpy(key, (session->master_key), 32);
     print_hex(key, 32);
-    printf("copying iv:\n");
+    do_debug("copying iv:\n");
     memcpy(iv, &(session->master_key[32]), 16);
     print_hex(iv, 16);
 
@@ -434,22 +434,22 @@ int main(int argc, char *argv[]) {
     BIO_set_accept_bios(acpt, bio);
 
     /* Setup accept BIO */
-    printf("Setting up the accept BIO... \n");
+    do_debug("Setting up the accept BIO... \n");
     if (BIO_do_accept(acpt) <= 0) {
-      fprintf(stderr, "Error setting up accept BIO\n");
+      do_debug(stderr, "Error setting up accept BIO\n");
       ERR_print_errors_fp(stderr);
       return (0);
     }
-    printf("SUCCESS!\n");
+    do_debug("SUCCESS!\n");
 
     /* Now wait for incoming connection */
-    printf("Setting up the incoming connection... \n");
+    do_debug("Setting up the incoming connection... \n");
     if (BIO_do_accept(acpt) <= 0) {
-      fprintf(stderr, "Error in connection\n");
+      do_debug(stderr, "Error in connection\n");
       ERR_print_errors_fp(stderr);
       return (0);
     }
-    printf("SUCCESS!\n");
+    do_debug("SUCCESS!\n");
 
     /* We only want one connection so remove and free
      * accept BIO
@@ -460,46 +460,46 @@ int main(int argc, char *argv[]) {
     BIO_free_all(acpt);
 
     // wait for ssl handshake from the client
-    printf("Waiting for SSL handshake...\n");
+    do_debug("Waiting for SSL handshake...\n");
     if (BIO_do_handshake(bio) <= 0) {
-      fprintf(stderr, "Error in SSL handshake\n");
+      do_debug(stderr, "Error in SSL handshake\n");
       ERR_print_errors_fp(stderr);
       return (0);
     }
-    printf("SUCCESS!\n");
+    do_debug("SUCCESS!\n");
     // generate the random number for the challenge
     srand((unsigned)time(NULL));
-    sprintf(number, "%d", rand());
+    sdo_debug(number, "%d", rand());
 
     // send the random number to the client
-    printf("Sending the random number challenge to the client. Number is %s... \n", number);
+    do_debug("Sending the random number challenge to the client. Number is %s... \n", number);
     if (BIO_write(bio, number, strlen(number)) <= 0) {
-      fprintf(stderr, "Error in sending random number\n");
+      do_debug(stderr, "Error in sending random number\n");
       ERR_print_errors_fp(stderr);
       exit(1);
     }
-    printf("SUCCESS!\n");
+    do_debug("SUCCESS!\n");
 
     BIO_flush(bio);
     
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
     //// Get the random number from the server
-    //printf("Waiting for random number from client... \n");
+    //do_debug("Waiting for random number from client... \n");
     //memset(tmpbuf, '\0', 11);
     //memset(number, '\0', 11);
     //int len = BIO_read(bio, tmpbuf, 10);
     //strcpy(number, tmpbuf);
-    //printf("SUCCESS!\nRandom number is: %s\n", number);
+    //do_debug("SUCCESS!\nRandom number is: %s\n", number);
     sleep(1); // sometimes the ssl pointer is not ready?
     BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
     //SSL_SESSION_print(out, session);
-    printf("MASTERKEY:\n");
+    do_debug("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
-    printf("copying key:\n");
+    do_debug("copying key:\n");
     memcpy(key, (session->master_key), 32);
     print_hex(key, 32);
-    printf("copying iv:\n");
+    do_debug("copying iv:\n");
     memcpy(iv, &(session->master_key[32]), 16);
     print_hex(iv, 16);
   }
@@ -612,21 +612,21 @@ int main(int argc, char *argv[]) {
 
     if (FD_ISSET(ssl_fd, &rd_set)){ // from ssl
       int len = BIO_read(bio, session_change, 33);
-      printf("Message from client!\n");
+      do_debug("Message from client!\n");
       //print_hex(session_change);
       if (session_change[0] == 's'){
-        printf("New session key\n");
+        do_debug("New session key\n");
         memcpy(key, &(session_change[1]), 32);
         print_hex(key, 32);
       } else if (session_change[0] == 'i'){
-        printf("New IV\n");
+        do_debug("New IV\n");
         memcpy(iv, &(session_change[1]), 16);
         print_hex(iv, 16);
       } else if (session_change[0] == 'b'){
-        printf("Break current VPN\n");
+        do_debug("Break current VPN\n");
         goto shutdown;
       } else {
-        printf("unkown message\n");
+        do_debug("unkown message\n");
       }
     }
 
@@ -636,7 +636,7 @@ int main(int argc, char *argv[]) {
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
         if (buf[0] == 's') {
-          printf("Changing the session key to:\n");
+          do_debug("Changing the session key to:\n");
           // generate random key
           int i;
           for (i = 0; i < 32; i++) {
@@ -648,18 +648,18 @@ int main(int argc, char *argv[]) {
           for (i = 0; i < 32; i++){
             msg[i + 1] = key[i];
           }
-          printf("Sending new session key to server\n"); // todo insure it arrives in order
+          do_debug("Sending new session key to server\n"); // todo insure it arrives in order
           if (BIO_write(bio, msg, 33) <= 0) {
-            fprintf(stderr, "Error in sending session key\n");
+            do_debug(stderr, "Error in sending session key\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
           BIO_flush(bio);
           free(msg);
-          printf("New session key sent!\n");
+          do_debug("New session key sent!\n");
         }
         else if (buf[0] == 'i') {
-          printf("Changing the iv to:\n");
+          do_debug("Changing the iv to:\n");
           // generate random iv
           int i;
           for (i = 0; i < 16; i++) {
@@ -672,31 +672,31 @@ int main(int argc, char *argv[]) {
             msg[i + 1] = iv[i];
           }
           if (BIO_write(bio, msg, 33) <= 0) {
-            fprintf(stderr, "Error in sending iv\n");
+            do_debug(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
           BIO_flush(bio);
           free(msg);
-          printf("New iv sent!\n");
+          do_debug("New iv sent!\n");
         }
         else if (buf[0] == 'b') {
           r = 1;
-          printf("Breaking the current VPN\n");
+          do_debug("Breaking the current VPN\n");
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'b';
           if (BIO_write(bio, msg, 33) <= 0) {
-            fprintf(stderr, "Error in sending iv\n");
+            do_debug(stderr, "Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
           BIO_flush(bio);
           free(msg);
-          printf("Break message sent\n");
+          do_debug("Break message sent\n");
           goto shutdown;
         }
         else 
-          printf("Unknown command\n");
+          do_debug("Unknown command\n");
       }
     }
 
