@@ -347,7 +347,7 @@ int main(int argc, char *argv[]) {
     // establish a connection to the server
     do_debug("Attempting to to connect to the server... ");
     if (BIO_do_connect(bio) <= 0) {
-      do_debug(stderr, "Error connecting to server\n");
+      do_debug("Error connecting to server\n");
       ERR_print_errors_fp(stderr);
       BIO_free_all(bio);
       BIO_free(out);
@@ -359,7 +359,7 @@ int main(int argc, char *argv[]) {
     // initiate the handshake with the server
     do_debug("Initiating SSL handshake with the server... \n");
     if (BIO_do_handshake(bio) <= 0) {
-      do_debug(stderr, "Error establishing SSL connection\n");
+      do_debug("Error establishing SSL connection\n");
       ERR_print_errors_fp(stderr);
       BIO_free_all(bio);
       BIO_free(out);
@@ -436,7 +436,7 @@ int main(int argc, char *argv[]) {
     /* Setup accept BIO */
     do_debug("Setting up the accept BIO... \n");
     if (BIO_do_accept(acpt) <= 0) {
-      do_debug(stderr, "Error setting up accept BIO\n");
+      do_debug("Error setting up accept BIO\n");
       ERR_print_errors_fp(stderr);
       return (0);
     }
@@ -445,7 +445,7 @@ int main(int argc, char *argv[]) {
     /* Now wait for incoming connection */
     do_debug("Setting up the incoming connection... \n");
     if (BIO_do_accept(acpt) <= 0) {
-      do_debug(stderr, "Error in connection\n");
+      do_debug("Error in connection\n");
       ERR_print_errors_fp(stderr);
       return (0);
     }
@@ -462,34 +462,15 @@ int main(int argc, char *argv[]) {
     // wait for ssl handshake from the client
     do_debug("Waiting for SSL handshake...\n");
     if (BIO_do_handshake(bio) <= 0) {
-      do_debug(stderr, "Error in SSL handshake\n");
+      do_debug("Error in SSL handshake\n");
       ERR_print_errors_fp(stderr);
       return (0);
     }
     do_debug("SUCCESS!\n");
-    // generate the random number for the challenge
     srand((unsigned)time(NULL));
-    sdo_debug(number, "%d", rand());
-
-    // send the random number to the client
-    do_debug("Sending the random number challenge to the client. Number is %s... \n", number);
-    if (BIO_write(bio, number, strlen(number)) <= 0) {
-      do_debug(stderr, "Error in sending random number\n");
-      ERR_print_errors_fp(stderr);
-      exit(1);
-    }
-    do_debug("SUCCESS!\n");
-
     BIO_flush(bio);
     
     out = BIO_new_fp(stdout, BIO_NOCLOSE);
-    //// Get the random number from the server
-    //do_debug("Waiting for random number from client... \n");
-    //memset(tmpbuf, '\0', 11);
-    //memset(number, '\0', 11);
-    //int len = BIO_read(bio, tmpbuf, 10);
-    //strcpy(number, tmpbuf);
-    //do_debug("SUCCESS!\nRandom number is: %s\n", number);
     sleep(1); // sometimes the ssl pointer is not ready?
     BIO_get_ssl(bio, &ssl);
     SSL_SESSION *session =SSL_get_session(ssl);
@@ -650,7 +631,7 @@ int main(int argc, char *argv[]) {
           }
           do_debug("Sending new session key to server\n"); // todo insure it arrives in order
           if (BIO_write(bio, msg, 33) <= 0) {
-            do_debug(stderr, "Error in sending session key\n");
+            do_debug("Error in sending session key\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
@@ -672,7 +653,7 @@ int main(int argc, char *argv[]) {
             msg[i + 1] = iv[i];
           }
           if (BIO_write(bio, msg, 33) <= 0) {
-            do_debug(stderr, "Error in sending iv\n");
+            do_debug("Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
@@ -686,7 +667,7 @@ int main(int argc, char *argv[]) {
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'b';
           if (BIO_write(bio, msg, 33) <= 0) {
-            do_debug(stderr, "Error in sending iv\n");
+            do_debug("Error in sending iv\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
