@@ -379,10 +379,10 @@ int main(int argc, char *argv[]) {
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
     printf("copying key:\n");
-    memcpy(key, (session->master_key), 256);
+    memcpy(key, (session->master_key), 32);
     print_hex(key, 32);
     printf("copying iv:\n");
-    memcpy(iv, &(session->master_key[32]), 128);
+    memcpy(iv, &(session->master_key[32]), 16);
     print_hex(iv, 16);
 
   } else {
@@ -497,10 +497,10 @@ int main(int argc, char *argv[]) {
     printf("MASTERKEY:\n");
     print_hex(session->master_key, session->master_key_length);
     printf("copying key:\n");
-    memcpy(key, (session->master_key), 256);
+    memcpy(key, (session->master_key), 32);
     print_hex(key, 32);
     printf("copying iv:\n");
-    memcpy(iv, &(session->master_key[32]), 128);
+    memcpy(iv, &(session->master_key[32]), 16);
     print_hex(iv, 16);
   }
 
@@ -615,11 +615,11 @@ int main(int argc, char *argv[]) {
       //print_hex(session_change);
       if (session_change[0] == 's'){
         printf("New session key\n");
-        memcpy(key, &(session_change[1]), 256);
+        memcpy(key, &(session_change[1]), 32);
         print_hex(key, 32);
       } else if (session_change[0] == 'i'){
         printf("New IV\n");
-        memcpy(iv, &(session_change[1]), 128);
+        memcpy(iv, &(session_change[1]), 16);
         print_hex(iv, 16);
       } else if (session_change[0] == 'b'){
         printf("Break current VPN\n");
