@@ -623,7 +623,7 @@ int main(int argc, char *argv[]) {
         print_hex(iv, 16);
       } else if (session_change[0] == 'b'){
         printf("Break current VPN\n");
-        // TODO
+        break;
       } else {
         printf("unkown message\n");
       }
@@ -746,6 +746,9 @@ int main(int argc, char *argv[]) {
   /* Close the connection and free the context */
   BIO_free_all(bio);
   SSL_CTX_free(ctx);
+
+  close(net_fd);
+  close(tap_fd);
 
   return (0);
 }
