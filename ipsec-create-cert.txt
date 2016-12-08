@@ -1,0 +1,45 @@
+cd /etc/ipsec.d/
+ipsec pki --gen --type rsa --size 4096 \
+	--outform pem \
+	> private/rootCaKey.pem
+
+    chmod 600 private/rootCaKey.pem
+
+    ipsec pki --self --ca --lifetime 3650 \
+	--in private/rootCaKey.pem --type rsa \
+	--dn "C=SE, O=rootCa, CN=Root CA" \
+	--outform pem \
+	> cacerts/rootCaCert.pem
+
+    ipsec pki --print --in cacerts/rootCaCert.pem
+
+    ipsec pki --gen --type rsa --size 2048 \
+	--outform pem \
+	> private/gatewayOneKey.pem
+
+    chmod 600 private/gatewayOneKey.pem
+
+    ipsec pki --pub --in private/gatewayOneKey.pem --type rsa | \
+	ipsec pki --issue --lifetime 730 \
+	--cacert cacerts/rootCaCert.pem \
+	--cakey private/rootCaKey.pem \
+	--dn "C=SE, O=ACME, CN=vpn.acme.se" \
+	--san vpn.acme.se \
+	--flag serverAuth --flag ikeIntermediate \
+	--outform pem > certs/gatewayOneCert.pem
+
+    ipsec pki --print --in certs/gatewayOneCert.pem
+
+    ipsec pki --gen --type rsa --size 2048 \
+	--outform pem \
+	> private/gatewayTwoKey.pem
+
+    chmod 600 private/gatewayTwoKey.pem
+
+    ipsec pki --pub --in private/gatewayTwoKey.pem --type rsa | \
+	ipsec pki --issue --lifetime 730 \
+	--cacert cacerts/rootCaCert.pem \
+	--cakey private/rootCaKey.pem \
+	--dn "C=UK, O=ACME, CN=london@acme.se" \
+	--san london@acme.se \
+	--outform pem > certs/gatewayTwoCert.pem

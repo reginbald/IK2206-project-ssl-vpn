@@ -190,9 +190,9 @@ void usage(void) {
 void print_hex(uint8_t *buf, size_t len) {
   size_t i;
   for (i = 0; i < len; i++) {
-    do_debug("%02x ", buf[i]);
+    printf("%02x ", buf[i]);
   }
-  do_debug("\n");
+  printf("\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -365,13 +365,13 @@ int main(int argc, char *argv[]) {
     /* We retrieve the master key from the session */
     SSL_SESSION *session = SSL_get_session(ssl);
     do_debug("MASTERKEY:\n");
-    print_hex(session->master_key, session->master_key_length);
+    //print_hex(session->master_key, session->master_key_length);
     do_debug("copying key:\n");
     memcpy(key, (session->master_key), 32);
-    print_hex(key, 32);
+    //print_hex(key, 32);
     do_debug("copying iv:\n");
     memcpy(iv, &(session->master_key[32]), 16);
-    print_hex(iv, 16);
+    //print_hex(iv, 16);
 
   } else {
     ctx = SSL_CTX_new(SSLv23_server_method());
@@ -459,13 +459,13 @@ int main(int argc, char *argv[]) {
     SSL_SESSION *session = SSL_get_session(ssl);
 
     do_debug("MASTERKEY:\n");
-    print_hex(session->master_key, session->master_key_length);
+    //print_hex(session->master_key, session->master_key_length);
     do_debug("copying key:\n");
     memcpy(key, (session->master_key), 32);
-    print_hex(key, 32);
+    //print_hex(key, 32);
     do_debug("copying iv:\n");
     memcpy(iv, &(session->master_key[32]), 16);
-    print_hex(iv, 16);
+    //print_hex(iv, 16);
   }
 
   /* initialize tun/tap interface */
@@ -600,7 +600,7 @@ int main(int argc, char *argv[]) {
       readn = read(STDIN, buf, sizeof(buf));
       if (readn > 0) {
         if (buf[0] == 's') {
-          do_debug("Changing the session key to:\n");
+          printf("Changing the session key to:\n");
           // generate random key
           int i;
           for (i = 0; i < 32; i++) {
@@ -614,7 +614,7 @@ int main(int argc, char *argv[]) {
           }
           do_debug("Sending new session key to server\n");
           if (BIO_write(bio, msg, 33) <= 0) {
-            do_debug("Error in sending session key\n");
+            printf("Error in sending session key\n");
             ERR_print_errors_fp(stderr);
             exit(1);
           }
@@ -623,7 +623,7 @@ int main(int argc, char *argv[]) {
           do_debug("New session key sent!\n");
         }
         else if (buf[0] == 'i') {
-          do_debug("Changing the iv to:\n");
+          printf("Changing the iv to:\n");
           // generate random iv
           int i;
           for (i = 0; i < 16; i++) {
@@ -642,11 +642,11 @@ int main(int argc, char *argv[]) {
           }
           BIO_flush(bio);
           free(msg);
-          do_debug("New iv sent!\n");
+          printf("New iv sent!\n");
         }
         else if (buf[0] == 'b') {
           r = 1;
-          do_debug("Breaking the current VPN\n");
+          printf("Breaking the current VPN\n");
           unsigned char *msg = (unsigned char*)calloc(33, sizeof(char));
           msg[0] = 'b';
           if (BIO_write(bio, msg, 33) <= 0) {
@@ -656,7 +656,7 @@ int main(int argc, char *argv[]) {
           }
           BIO_flush(bio);
           free(msg);
-          do_debug("Break message sent\n");
+          printf("Break message sent\n");
           goto shutdown;
         }
         else
