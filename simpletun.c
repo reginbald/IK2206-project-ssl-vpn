@@ -534,10 +534,13 @@ int main(int argc, char *argv[]) {
   /* use select() to handle two descriptors at once */
   maxfd = (tap_fd > net_fd) ? tap_fd : net_fd;
 
-  printf("Available commands: \n");
-  printf("s : changes the session key \n");
-  printf("i : changes the IV \n");
-  printf("b : breaks the current VPN tunnel\n");
+  if (cliserv == CLIENT) {
+    printf("Available commands: \n");
+    printf("s : changes the session key \n");
+    printf("i : changes the IV \n");
+    printf("b : breaks the current VPN tunnel\n");
+  }
+  
   int r = 0;
   while (1) {
     int ret;
