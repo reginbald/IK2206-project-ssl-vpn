@@ -294,7 +294,10 @@ int main(int argc, char *argv[]) {
     usage();
   }
 
-  /* SSL code */
+    /* SSL code 
+  * The code is based from the code available at
+  * https://wiki.openssl.org/index.php/Manual:BIO_f_ssl(3)
+  */
   if (cliserv == CLIENT) {
     ctx = SSL_CTX_new(SSLv23_client_method());
     if (!ctx) {
